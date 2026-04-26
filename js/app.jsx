@@ -14,6 +14,20 @@ const App = () => {
   const [tab, setTab]     = useState('today');
   const [vw, setVw]       = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  /* Toggle plein écran — appelé par le raccourci F et par les boutons "Focus" in-app. */
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  };
+
+  /* Synchronise isFullscreen avec l'état réel du navigateur (couvre Esc, F, bouton…) */
+  useEffect(() => {
+    const onFs = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', onFs);
+    return () => document.removeEventListener('fullscreenchange', onFs);
+  }, []);
   const dark = prefs.darkMode;
   const pal  = PALETTES[prefs.palIdx] || PALETTES[0];
   const font = FONTS[prefs.fontIdx]   || FONTS[0];
@@ -45,8 +59,7 @@ const App = () => {
 
       const k = e.key.toLowerCase();
       if (k === 'f') {
-        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
-        else document.exitFullscreen?.();
+        toggleFullscreen();
         e.preventDefault();
       } else if (k === 'd') {
         setPrefs(p => ({ ...p, darkMode: !p.darkMode }));
@@ -96,9 +109,9 @@ const App = () => {
 
   const props = { dark, pal };
   const screens = {
-    today:    <TodayScreen    {...props} onNav={setTab} streak={stats.streak} nextTest={stats.nextTest} weekSuccess={stats.weekSuccess} onRecord={recordAnswer} />,
+    today:    <TodayScreen    {...props} onNav={setTab} streak={stats.streak} nextTest={stats.nextTest} weekSuccess={stats.weekSuccess} onRecord={recordAnswer} focus={isFullscreen} onToggleFocus={toggleFullscreen} />,
     fiches:   <FichesScreen   {...props} onNav={setTab} />,
-    reviser:  <ReviserScreen  {...props} onRecord={recordAnswer} />,
+    reviser:  <ReviserScreen  {...props} onRecord={recordAnswer} focusMode={isFullscreen} onToggleFocus={toggleFullscreen} />,
     planning: <PlanningScreen {...props} tests={db.tests} onAddTest={addTest} onRemoveTest={removeTest} />,
     moi:      <MoiScreen      {...props} palIdx={prefs.palIdx} setPalIdx={setPalIdx} onDarkToggle={onDarkToggle}
                               fontIdx={prefs.fontIdx} setFontIdx={setFontIdx}

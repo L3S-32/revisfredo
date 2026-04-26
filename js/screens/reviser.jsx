@@ -1,11 +1,10 @@
 /* Écran "Réviser" — session immersive plein écran, raccourcis clavier, écran de fin animé */
 
-const ReviserScreen = ({ dark, pal, onRecord }) => {
+const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
   const [idx, setIdx]                   = useState(0);
   const [flipped, setFlipped]           = useState(false);
   const [results, setResults]           = useState([]);
   const [secs, setSecs]                 = useState(0);
-  const [focusMode, setFocusMode]       = useState(false);
   const [showEnd, setShowEnd]           = useState(false);
   const [scoreVisible, setScoreVisible] = useState(false);
   const flippedRef = useRef(false);
@@ -75,7 +74,7 @@ const ReviserScreen = ({ dark, pal, onRecord }) => {
             <div style={{ fontSize:14, fontWeight:600, color:c.icon, display:'flex', alignItems:'center', gap:6 }}>
               <Ic n="clock" s={15} c={c.icon} />{fmt(secs)}
             </div>
-            <button onClick={()=>setFocusMode(true)} style={{ padding:'7px 14px', borderRadius:10, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'var(--app-font)', display:'flex', alignItems:'center', gap:6 }}>
+            <button onClick={onToggleFocus} title="Plein écran (F)" style={{ padding:'7px 14px', borderRadius:10, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'var(--app-font)', display:'flex', alignItems:'center', gap:6 }}>
               <Ic n="focus" s={13} c={c.icon} />Focus
             </button>
           </div>
@@ -83,7 +82,7 @@ const ReviserScreen = ({ dark, pal, onRecord }) => {
       )}
       {focusMode && (
         <div style={{ display:'flex', justifyContent:'flex-end', padding:'14px 28px', position:'relative', zIndex:2 }}>
-          <button onClick={()=>setFocusMode(false)} style={{ padding:'7px 14px', borderRadius:10, background:pal.primary, border:'none', color:c.text, fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)', display:'flex', alignItems:'center', gap:6 }}>
+          <button onClick={onToggleFocus} title="Quitter le plein écran (F ou Esc)" style={{ padding:'7px 14px', borderRadius:10, background:pal.primary, border:'none', color:c.text, fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)', display:'flex', alignItems:'center', gap:6 }}>
             <Ic n="close" s={13} c={c.text} />Quitter Focus
           </button>
         </div>
