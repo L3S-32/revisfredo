@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revisfredo — Révisions BTS SIO</title>
+  <meta name="description" content="Application de révision par flashcards pour Alfredo — BTS SIO">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📚%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased; }
+
+    /* Flip card */
+    .flip-container { position: relative; }
+    .flip-face, .flip-back {
+      position: absolute; inset: 0;
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+    .flip-face         { opacity:1; transform:scale(1);    pointer-events:auto; }
+    .flip-face.hidden  { opacity:0; transform:scale(0.94); pointer-events:none; }
+    .flip-back         { opacity:0; transform:scale(0.94); pointer-events:none; }
+    .flip-back.visible { opacity:1; transform:scale(1);    pointer-events:auto; }
+
+    @keyframes slideUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+    .slide-up { animation: slideUp 0.28s ease forwards; }
+    @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+
+    @keyframes sparkleFall {
+      0%   { transform: translateY(-2px) scale(1); opacity: 1; }
+      100% { transform: translateY(16px) scale(0); opacity: 0; }
+    }
+    @keyframes shimmerGlow {
+      0%,100% { opacity: 0.75; }
+      50%      { opacity: 1; filter: brightness(1.15); }
+    }
+    .bar-shimmer:hover { animation: shimmerGlow 1s ease infinite; }
+
+    @keyframes waveExpand {
+      0%   { transform: translate(-50%,-50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%,-50%) scale(2.2); opacity: 0; }
+    }
+    @keyframes scoreIn {
+      0%   { opacity: 0; transform: scale(0.6); }
+      60%  { transform: scale(1.06); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-thumb { background:#A8C266; border-radius:3px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+
+    @media (max-width:640px) {
+      .top-nav   { display:none !important; }
+      .bot-nav   { display:flex !important; }
+      .scr       { padding-bottom:84px !important; }
+      .bento     { grid-template-columns:1fr !important; grid-template-rows:none !important; flex:none !important; }
+      .bento > * { grid-column:unset !important; grid-row:unset !important; }
+      .fg3       { grid-template-columns:1fr 1fr !important; }
+      .fg4       { grid-template-columns:1fr 1fr !important; }
+      .fg2       { grid-template-columns:1fr !important; }
+      .wk        { gap:4px !important; }
+      .scr-fit   { height:auto !important; min-height:calc(100vh - 65px) !important; display:block !important; }
+    }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<!--
+  Ordre de chargement (CRITIQUE) :
+  1. setup.js        → expose useState/useEffect/useRef de React (doit être en premier)
+  2. palettes / data / format / persistence / stats → constantes & helpers purs
+  3. components.jsx  → micro-composants UI (Ic, Blob, Card, Toggle, SparkleBar, EditableText, modCol)
+  4. screens/*.jsx   → écrans (utilisent les composants ci-dessus)
+  5. nav.jsx         → barre de navigation
+  6. app.jsx         → composant racine + ReactDOM.createRoot (DOIT être en dernier)
+-->
+<script type="text/babel" src="js/setup.js"></script>
+
+<script type="text/babel" src="js/palettes.js"></script>
+<script type="text/babel" src="js/data.js"></script>
+<script type="text/babel" src="js/format.js"></script>
+<script type="text/babel" src="js/persistence.js"></script>
+<script type="text/babel" src="js/stats.js"></script>
+
+<script type="text/babel" src="js/components.jsx"></script>
+
+<script type="text/babel" src="js/screens/today.jsx"></script>
+<script type="text/babel" src="js/screens/fiches.jsx"></script>
+<script type="text/babel" src="js/screens/reviser.jsx"></script>
+<script type="text/babel" src="js/screens/planning.jsx"></script>
+<script type="text/babel" src="js/screens/moi.jsx"></script>
+
+<script type="text/babel" src="js/nav.jsx"></script>
+<script type="text/babel" src="js/app.jsx"></script>
+</body>
+</html>
