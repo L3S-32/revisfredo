@@ -15,10 +15,18 @@ const App = () => {
   const [vw, setVw]       = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
   const dark = prefs.darkMode;
   const pal  = PALETTES[prefs.palIdx] || PALETTES[0];
+  const font = FONTS[prefs.fontIdx]   || FONTS[0];
   const c    = mkC(pal, dark);
 
   useEffect(() => { savePrefs(prefs); }, [prefs]);
   useEffect(() => { saveDB(db); },       [db]);
+
+  /* Police globale exposée via une variable CSS — body et tous les fontFamily inline
+     l'utilisent via var(--app-font). Les aperçus du sélecteur peuvent surcharger
+     localement avec leur propre fontFamily sans conflit. */
+  useEffect(() => {
+    document.documentElement.style.setProperty('--app-font', font.stack);
+  }, [font.stack]);
 
   useEffect(() => {
     const onResize = () => setVw(window.innerWidth);
@@ -30,6 +38,7 @@ const App = () => {
   const totalZoom = autoScaleFor(vw) * prefs.textScale;
 
   const setPalIdx     = (v) => setPrefs(p => ({ ...p, palIdx: v }));
+  const setFontIdx    = (v) => setPrefs(p => ({ ...p, fontIdx: v }));
   const onDarkToggle  = (v) => setPrefs(p => ({ ...p, darkMode: v }));
   const setTextScale  = (v) => setPrefs(p => ({ ...p, textScale: v }));
 
@@ -63,6 +72,7 @@ const App = () => {
     reviser:  <ReviserScreen  {...props} onRecord={recordAnswer} />,
     planning: <PlanningScreen {...props} tests={db.tests} onAddTest={addTest} onRemoveTest={removeTest} />,
     moi:      <MoiScreen      {...props} palIdx={prefs.palIdx} setPalIdx={setPalIdx} onDarkToggle={onDarkToggle}
+                              fontIdx={prefs.fontIdx} setFontIdx={setFontIdx}
                               textScale={prefs.textScale} setTextScale={setTextScale}
                               stats={stats} userName={db.userName} userSub={db.userSub}
                               onUserName={setUserName} onUserSub={setUserSub} />,
@@ -71,7 +81,7 @@ const App = () => {
   /* La var --zoom permet aux écrans qui se calent sur la viewport (Today)
      de diviser leur hauteur pour compenser le zoom rendu. */
   return (
-    <div style={{ minHeight:'100vh', background:c.bg, fontFamily:'Inter,sans-serif', transition:'background 0.4s ease', '--zoom': totalZoom }}>
+    <div style={{ minHeight:'100vh', background:c.bg, fontFamily:'var(--app-font)', transition:'background 0.4s ease', '--zoom': totalZoom }}>
       <Nav active={tab} onTab={setTab} dark={dark} pal={pal} />
       <div key={tab} className="slide-up" style={{ zoom: totalZoom }}>{screens[tab]}</div>
     </div>

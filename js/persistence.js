@@ -6,14 +6,15 @@ const STORAGE_KEY = 'revisfredo-prefs';
 const loadPrefs = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { darkMode:false, palIdx:0, textScale:1 };
+    if (!raw) return { darkMode:false, palIdx:0, textScale:1, fontIdx:0 };
     const p = JSON.parse(raw);
     return {
       darkMode: !!p.darkMode,
-      palIdx: Number.isInteger(p.palIdx) && p.palIdx >= 0 && p.palIdx < PALETTES.length ? p.palIdx : 0,
+      palIdx:  Number.isInteger(p.palIdx)  && p.palIdx  >= 0 && p.palIdx  < PALETTES.length ? p.palIdx  : 0,
+      fontIdx: Number.isInteger(p.fontIdx) && p.fontIdx >= 0 && p.fontIdx < FONTS.length    ? p.fontIdx : 0,
       textScale: typeof p.textScale === 'number' && p.textScale >= 0.7 && p.textScale <= 1.5 ? p.textScale : 1,
     };
-  } catch { return { darkMode:false, palIdx:0, textScale:1 }; }
+  } catch { return { darkMode:false, palIdx:0, textScale:1, fontIdx:0 }; }
 };
 
 const savePrefs = (prefs) => {

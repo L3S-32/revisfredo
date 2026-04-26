@@ -55,9 +55,9 @@ const TodayScreen = ({ dark, pal, onNav, streak, nextTest, weekSuccess, onRecord
           </div>
 
           <div style={{ display:'flex', gap:10, marginTop:18, position:'relative', zIndex:1, opacity:flipped?1:0.28, transition:'opacity 0.3s', pointerEvents:flipped?'auto':'none' }}>
-            <button onClick={() => answer('hard')} style={{ flex:1, padding:'12px', background:'rgba(220,60,60,0.2)', border:'1.5px solid rgba(220,60,60,0.35)', borderRadius:14, color:'#ff8080', fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>😅 Difficile</button>
-            <button onClick={() => answer('ok')}   style={{ flex:1, padding:'12px', background:`${pal.primary}28`, border:`1.5px solid ${pal.primary}`, borderRadius:14, color:pal.primary, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>👍 OK</button>
-            <button onClick={() => answer('easy')} style={{ flex:1, padding:'12px', background:pal.primary, border:'none', borderRadius:14, color:c.text, fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>⚡ Facile</button>
+            <button onClick={() => answer('hard')} style={{ flex:1, padding:'12px', background:'rgba(220,60,60,0.2)', border:'1.5px solid rgba(220,60,60,0.35)', borderRadius:14, color:'#ff8080', fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)' }}>😅 Difficile</button>
+            <button onClick={() => answer('ok')}   style={{ flex:1, padding:'12px', background:`${pal.primary}28`, border:`1.5px solid ${pal.primary}`, borderRadius:14, color:pal.primary, fontSize:14, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)' }}>👍 OK</button>
+            <button onClick={() => answer('easy')} style={{ flex:1, padding:'12px', background:pal.primary, border:'none', borderRadius:14, color:c.text, fontSize:14, fontWeight:700, cursor:'pointer', fontFamily:'var(--app-font)' }}>⚡ Facile</button>
           </div>
         </Card>
 
@@ -111,7 +111,7 @@ const TodayScreen = ({ dark, pal, onNav, streak, nextTest, weekSuccess, onRecord
 
       {/* Bouton Mode Focus */}
       <div style={{ margin:'16px auto 0', position:'relative', zIndex:1 }}>
-        <button onClick={() => setFocus(f=>!f)} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 20px', background:focus?pal.primary:`${pal.primary}10`, border:`1.5px solid ${focus?pal.primary:c.border}`, borderRadius:14, cursor:'pointer', fontSize:14, fontWeight:500, color:focus?c.text:c.icon, fontFamily:'Inter,sans-serif', transition:'all 0.25s' }}>
+        <button onClick={() => setFocus(f=>!f)} style={{ display:'flex', alignItems:'center', gap:10, padding:'11px 20px', background:focus?pal.primary:`${pal.primary}10`, border:`1.5px solid ${focus?pal.primary:c.border}`, borderRadius:14, cursor:'pointer', fontSize:14, fontWeight:500, color:focus?c.text:c.icon, fontFamily:'var(--app-font)', transition:'all 0.25s' }}>
           <Ic n="focus" s={17} c={focus?c.text:c.icon} />
           {focus ? '✓ Mode Focus activé — bonne concentration !' : 'Activer le Mode Focus'}
         </button>

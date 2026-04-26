@@ -104,7 +104,7 @@ const EditableText = ({ value, onChange, style, placeholder }) => {
       <input autoFocus value={v} onChange={e=>setV(e.target.value)} onBlur={commit}
         onKeyDown={e => { if (e.key==='Enter') commit(); if (e.key==='Escape') { setV(value); setEditing(false); } }}
         placeholder={placeholder}
-        style={{ ...style, padding:'2px 6px', borderRadius:6, border:`1.5px solid ${style.color||'#999'}40`, background:'rgba(255,255,255,0.08)', outline:'none', fontFamily:'Inter,sans-serif' }} />
+        style={{ ...style, padding:'2px 6px', borderRadius:6, border:`1.5px solid ${style.color||'#999'}40`, background:'rgba(255,255,255,0.08)', outline:'none', fontFamily:'var(--app-font)' }} />
     );
   }
   return (

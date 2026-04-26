@@ -75,7 +75,7 @@ const ReviserScreen = ({ dark, pal, onRecord }) => {
             <div style={{ fontSize:14, fontWeight:600, color:c.icon, display:'flex', alignItems:'center', gap:6 }}>
               <Ic n="clock" s={15} c={c.icon} />{fmt(secs)}
             </div>
-            <button onClick={()=>setFocusMode(true)} style={{ padding:'7px 14px', borderRadius:10, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'Inter,sans-serif', display:'flex', alignItems:'center', gap:6 }}>
+            <button onClick={()=>setFocusMode(true)} style={{ padding:'7px 14px', borderRadius:10, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'var(--app-font)', display:'flex', alignItems:'center', gap:6 }}>
               <Ic n="focus" s={13} c={c.icon} />Focus
             </button>
           </div>
@@ -83,7 +83,7 @@ const ReviserScreen = ({ dark, pal, onRecord }) => {
       )}
       {focusMode && (
         <div style={{ display:'flex', justifyContent:'flex-end', padding:'14px 28px', position:'relative', zIndex:2 }}>
-          <button onClick={()=>setFocusMode(false)} style={{ padding:'7px 14px', borderRadius:10, background:pal.primary, border:'none', color:c.text, fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'Inter,sans-serif', display:'flex', alignItems:'center', gap:6 }}>
+          <button onClick={()=>setFocusMode(false)} style={{ padding:'7px 14px', borderRadius:10, background:pal.primary, border:'none', color:c.text, fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)', display:'flex', alignItems:'center', gap:6 }}>
             <Ic n="close" s={13} c={c.text} />Quitter Focus
           </button>
         </div>
@@ -104,9 +104,9 @@ const ReviserScreen = ({ dark, pal, onRecord }) => {
         </div>
 
         <div style={{ display:'flex', gap:12, marginTop:20, width:'100%', maxWidth:'min(100%, 1100px)', opacity:flipped?1:0.25, transition:'opacity 0.3s', pointerEvents:flipped?'auto':'none' }}>
-          <button onClick={()=>answer('hard')} style={{ flex:1, padding:'15px', background:'rgba(220,60,60,0.1)', border:'1.5px solid rgba(220,60,60,0.3)', borderRadius:16, color:'#e06060', fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>Difficile</button>
-          <button onClick={()=>answer('ok')}   style={{ flex:1, padding:'15px', background:`${pal.primary}18`, border:`1.5px solid ${pal.primary}`, borderRadius:16, color:dark?pal.primary:c.second, fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>OK</button>
-          <button onClick={()=>answer('easy')} style={{ flex:1, padding:'15px', background:pal.primary, border:'none', borderRadius:16, color:c.text, fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>Facile ⚡</button>
+          <button onClick={()=>answer('hard')} style={{ flex:1, padding:'15px', background:'rgba(220,60,60,0.1)', border:'1.5px solid rgba(220,60,60,0.3)', borderRadius:16, color:'#e06060', fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)' }}>Difficile</button>
+          <button onClick={()=>answer('ok')}   style={{ flex:1, padding:'15px', background:`${pal.primary}18`, border:`1.5px solid ${pal.primary}`, borderRadius:16, color:dark?pal.primary:c.second, fontSize:15, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)' }}>OK</button>
+          <button onClick={()=>answer('easy')} style={{ flex:1, padding:'15px', background:pal.primary, border:'none', borderRadius:16, color:c.text, fontSize:15, fontWeight:700, cursor:'pointer', fontFamily:'var(--app-font)' }}>Facile ⚡</button>
         </div>
 
         {results.length > 0 && !showEnd && (
@@ -149,7 +149,7 @@ const ReviserScreen = ({ dark, pal, onRecord }) => {
               </div>
               <button
                 onClick={() => { setShowEnd(false); setScoreVisible(false); setResults([]); setIdx(0); setFlipped(false); setSecs(0); }}
-                style={{ marginTop:28, padding:'14px 32px', background:c.cardDk, border:'none', borderRadius:16, color:c.cardDkTxt, fontSize:16, fontWeight:700, cursor:'pointer', fontFamily:'Inter,sans-serif' }}
+                style={{ marginTop:28, padding:'14px 32px', background:c.cardDk, border:'none', borderRadius:16, color:c.cardDkTxt, fontSize:16, fontWeight:700, cursor:'pointer', fontFamily:'var(--app-font)' }}
               >
                 Recommencer
               </button>

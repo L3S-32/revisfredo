@@ -1,6 +1,6 @@
 /* Écran "Moi" — profil éditable, statistiques, réglages, sélecteur de palette */
 
-const MoiScreen = ({ dark, pal, palIdx, setPalIdx, onDarkToggle, textScale, setTextScale, stats, userName, userSub, onUserName, onUserSub }) => {
+const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkToggle, textScale, setTextScale, stats, userName, userSub, onUserName, onUserSub }) => {
   const c = mkC(pal, dark);
   const [subTab, setSubTab] = useState('profil');
   const [sound, setSound] = useState(true);
@@ -41,9 +41,10 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, onDarkToggle, textScale, setT
         </div>
 
         <div style={{ display:'flex', background:`${pal.primary}15`, borderRadius:14, padding:4, gap:2, marginBottom:24, width:'fit-content' }}>
-          {[['profil','Profil'],['palette','Palette']].map(([id,label]) => (
-            <button key={id} onClick={()=>setSubTab(id)} style={{ padding:'9px 22px', borderRadius:11, border:'none', background:subTab===id?pal.primary:'transparent', color:subTab===id?c.text:c.icon, fontWeight:600, fontSize:14, cursor:'pointer', fontFamily:'Inter,sans-serif', transition:'all 0.2s', display:'flex', alignItems:'center', gap:7 }}>
+          {[['profil','Profil'],['palette','Palette'],['visuel','Visuel']].map(([id,label]) => (
+            <button key={id} onClick={()=>setSubTab(id)} style={{ padding:'9px 22px', borderRadius:11, border:'none', background:subTab===id?pal.primary:'transparent', color:subTab===id?c.text:c.icon, fontWeight:600, fontSize:14, cursor:'pointer', fontFamily:'var(--app-font)', transition:'all 0.2s', display:'flex', alignItems:'center', gap:7 }}>
               {id==='palette' && <Ic n="palette" s={15} c={subTab===id?c.text:c.icon} />}
+              {id==='visuel'  && <span style={{ fontSize:13, fontWeight:800, lineHeight:1, letterSpacing:'-0.02em' }}>Aa</span>}
               {label}
             </button>
           ))}
@@ -145,7 +146,7 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, onDarkToggle, textScale, setT
                           style={{ minWidth:34, padding:'4px 8px', borderRadius:9, border:'none',
                             background: active ? pal.primary : 'transparent',
                             color: active ? c.text : c.icon,
-                            fontSize:opt.s, fontWeight:800, cursor:'pointer', fontFamily:'Inter,sans-serif',
+                            fontSize:opt.s, fontWeight:800, cursor:'pointer', fontFamily:'var(--app-font)',
                             transition:'all 0.18s', lineHeight:1 }}>
                           {opt.l}
                         </button>
@@ -156,6 +157,41 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, onDarkToggle, textScale, setT
               </div>
             </Card>
           </>
+        )}
+
+        {subTab === 'visuel' && (
+          <div>
+            <p style={{ fontSize:14, color:c.icon, marginBottom:20, lineHeight:1.6 }}>Choisis la typographie qui te convient. Elle s'applique à toute l'interface — y compris pendant les révisions.</p>
+
+            <div style={{ fontSize:11, fontWeight:700, letterSpacing:'0.11em', textTransform:'uppercase', color:c.icon, opacity:0.6, marginBottom:12 }}>Police</div>
+
+            <div className="fg2" style={{ display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:12 }}>
+              {FONTS.map((f, i) => {
+                const isActive = fontIdx === i;
+                return (
+                  <div
+                    key={f.id}
+                    onClick={() => setFontIdx(i)}
+                    style={{ background:c.surf, borderRadius:18, padding:'18px 20px', cursor:'pointer', border:`2px solid ${isActive?pal.primary:'transparent'}`, transition:'all 0.2s', position:'relative' }}
+                  >
+                    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                      <div style={{ fontSize:14, fontWeight:700, color:c.text, fontFamily:f.stack }}>{f.name}</div>
+                      <div style={{ fontSize:10, fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase', color:c.icon, opacity:0.7, padding:'3px 8px', borderRadius:6, background:`${pal.primary}15` }}>{f.kind}</div>
+                    </div>
+                    <div style={{ fontSize:22, fontWeight:600, color:c.text, fontFamily:f.stack, marginBottom:8, lineHeight:1.1, letterSpacing:f.kind==='Mono' ? 0 : '-0.01em' }}>
+                      {f.sample}
+                    </div>
+                    <div style={{ fontSize:12, color:c.icon, opacity:0.75, fontFamily:f.stack }}>{f.desc}</div>
+                    {isActive && (
+                      <div style={{ position:'absolute', top:12, right:12, width:20, height:20, borderRadius:'50%', background:pal.primary, display:'flex', alignItems:'center', justifyContent:'center' }}>
+                        <Ic n="check" s={11} c={c.text} />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
         )}
 
         {subTab === 'palette' && (

@@ -15,7 +15,7 @@ const FichesScreen = ({ dark, pal, onNav }) => {
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:26 }}>
           <h2 style={{ fontSize:28, fontWeight:800, color:c.text }}>Mes fiches</h2>
           <input value={q} onChange={e=>setQ(e.target.value)} placeholder="Rechercher…"
-            style={{ padding:'9px 16px', borderRadius:12, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:14, fontFamily:'Inter,sans-serif', outline:'none', width:230 }} />
+            style={{ padding:'9px 16px', borderRadius:12, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:14, fontFamily:'var(--app-font)', outline:'none', width:230 }} />
         </div>
         <div className="fg3" style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit, minmax(280px, 1fr))', gap:16 }}>
           {mods.map(mod => {

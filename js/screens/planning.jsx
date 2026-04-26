@@ -57,7 +57,7 @@ const PlanningScreen = ({ dark, pal, tests, onAddTest, onRemoveTest }) => {
             Planning
             {unlocked && <span title="Session déverrouillée" style={{ fontSize:14, marginLeft:10, opacity:0.7 }}>🔓</span>}
           </h2>
-          <button onClick={toggleForm} style={{ padding:'9px 18px', borderRadius:12, background:showForm?c.cardDk:pal.primary, border:'none', color:showForm?c.cardDkTxt:c.text, fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
+          <button onClick={toggleForm} style={{ padding:'9px 18px', borderRadius:12, background:showForm?c.cardDk:pal.primary, border:'none', color:showForm?c.cardDkTxt:c.text, fontSize:13, fontWeight:700, cursor:'pointer', fontFamily:'var(--app-font)' }}>
             {showForm ? 'Annuler' : (unlocked ? '+ Ajouter un test' : '🔒 Ajouter un test')}
           </button>
         </div>
@@ -76,8 +76,8 @@ const PlanningScreen = ({ dark, pal, tests, onAddTest, onRemoveTest }) => {
               <input type="password" autoFocus value={pwInput}
                 onChange={e=>{ setPwInput(e.target.value); if (pwError) setPwError(false); }}
                 placeholder="Mot de passe…"
-                style={{ flex:1, padding:'11px 14px', borderRadius:11, border:`1.5px solid ${pwError?'#e06060':c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:14, fontFamily:'Inter,sans-serif', outline:'none', transition:'border-color 0.15s' }} />
-              <button type="submit" disabled={!pwInput} style={{ padding:'11px 22px', borderRadius:11, background:pwInput?pal.primary:`${pal.primary}40`, border:'none', color:c.text, fontSize:14, fontWeight:700, cursor:pwInput?'pointer':'not-allowed', fontFamily:'Inter,sans-serif' }}>
+                style={{ flex:1, padding:'11px 14px', borderRadius:11, border:`1.5px solid ${pwError?'#e06060':c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:14, fontFamily:'var(--app-font)', outline:'none', transition:'border-color 0.15s' }} />
+              <button type="submit" disabled={!pwInput} style={{ padding:'11px 22px', borderRadius:11, background:pwInput?pal.primary:`${pal.primary}40`, border:'none', color:c.text, fontSize:14, fontWeight:700, cursor:pwInput?'pointer':'not-allowed', fontFamily:'var(--app-font)' }}>
                 Déverrouiller
               </button>
             </form>
@@ -96,12 +96,12 @@ const PlanningScreen = ({ dark, pal, tests, onAddTest, onRemoveTest }) => {
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:c.icon, marginBottom:5, letterSpacing:'0.08em', textTransform:'uppercase' }}>Date</div>
                 <input type="date" value={fDate} onChange={e=>setFDate(e.target.value)}
-                  style={{ width:'100%', padding:'9px 12px', borderRadius:10, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:13, fontFamily:'Inter,sans-serif', outline:'none' }} />
+                  style={{ width:'100%', padding:'9px 12px', borderRadius:10, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:13, fontFamily:'var(--app-font)', outline:'none' }} />
               </div>
               <div>
                 <div style={{ fontSize:11, fontWeight:700, color:c.icon, marginBottom:5, letterSpacing:'0.08em', textTransform:'uppercase' }}>Module</div>
                 <select value={fMod} onChange={e=>setFMod(e.target.value)}
-                  style={{ width:'100%', padding:'9px 12px', borderRadius:10, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:13, fontFamily:'Inter,sans-serif', outline:'none' }}>
+                  style={{ width:'100%', padding:'9px 12px', borderRadius:10, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:13, fontFamily:'var(--app-font)', outline:'none' }}>
                   {MODULES.map(m => <option key={m.id} value={m.id}>{m.id} — {m.label}</option>)}
                 </select>
               </div>
@@ -109,9 +109,9 @@ const PlanningScreen = ({ dark, pal, tests, onAddTest, onRemoveTest }) => {
             <div style={{ marginBottom:12 }}>
               <div style={{ fontSize:11, fontWeight:700, color:c.icon, marginBottom:5, letterSpacing:'0.08em', textTransform:'uppercase' }}>Intitulé (optionnel)</div>
               <input value={fLabel} onChange={e=>setFLabel(e.target.value)} placeholder="Ex. Examen partiel"
-                style={{ width:'100%', padding:'9px 12px', borderRadius:10, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:13, fontFamily:'Inter,sans-serif', outline:'none' }} />
+                style={{ width:'100%', padding:'9px 12px', borderRadius:10, border:`1.5px solid ${c.border}`, background:dark?`${pal.primary}0a`:'white', color:c.text, fontSize:13, fontFamily:'var(--app-font)', outline:'none' }} />
             </div>
-            <button onClick={submitTest} disabled={!fDate} style={{ padding:'10px 20px', borderRadius:11, background:fDate?pal.primary:`${pal.primary}40`, border:'none', color:c.text, fontSize:13, fontWeight:700, cursor:fDate?'pointer':'not-allowed', fontFamily:'Inter,sans-serif' }}>
+            <button onClick={submitTest} disabled={!fDate} style={{ padding:'10px 20px', borderRadius:11, background:fDate?pal.primary:`${pal.primary}40`, border:'none', color:c.text, fontSize:13, fontWeight:700, cursor:fDate?'pointer':'not-allowed', fontFamily:'var(--app-font)' }}>
               Enregistrer
             </button>
           </Card>
@@ -143,7 +143,7 @@ const PlanningScreen = ({ dark, pal, tests, onAddTest, onRemoveTest }) => {
             {testToday ? `Test ce jour : ${testToday.label || modLabel(testToday.mod)}` : 'Pas de test — bonne révision !'}
           </div>
           {testToday && (
-            <button onClick={()=>onRemoveTest(testToday.id)} style={{ position:'relative', zIndex:1, padding:'8px 14px', borderRadius:10, background:'rgba(220,60,60,0.18)', border:'1.5px solid rgba(220,60,60,0.3)', color:'#ff8080', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
+            <button onClick={()=>onRemoveTest(testToday.id)} style={{ position:'relative', zIndex:1, padding:'8px 14px', borderRadius:10, background:'rgba(220,60,60,0.18)', border:'1.5px solid rgba(220,60,60,0.3)', color:'#ff8080', fontSize:12, fontWeight:600, cursor:'pointer', fontFamily:'var(--app-font)' }}>
               Supprimer ce test
             </button>
           )}
@@ -174,7 +174,7 @@ const PlanningScreen = ({ dark, pal, tests, onAddTest, onRemoveTest }) => {
                     <div style={{ fontSize:32, fontWeight:900, color:c.text, lineHeight:1 }}>{dj <= 0 ? "Auj." : `${dj}j`}</div>
                     <div style={{ fontSize:11, color:c.icon, opacity:0.7 }}>{dj <= 0 ? '' : 'restants'}</div>
                   </div>
-                  <button onClick={()=>onRemoveTest(t.id)} title="Supprimer" style={{ width:30, height:30, borderRadius:8, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'Inter,sans-serif' }}>
+                  <button onClick={()=>onRemoveTest(t.id)} title="Supprimer" style={{ width:30, height:30, borderRadius:8, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', fontFamily:'var(--app-font)' }}>
                     <Ic n="close" s={13} c={c.icon} />
                   </button>
                 </div>

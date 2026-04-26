@@ -20,7 +20,7 @@ const Nav = ({ active, onTab, dark, pal }) => {
           <span style={{ fontSize:16, fontWeight:800, color:c.text, letterSpacing:'-0.02em' }}>revisfredo</span>
         </div>
         {TABS.map(t => (
-          <button key={t.id} onClick={()=>onTab(t.id)} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 18px', borderRadius:22, border:'none', background:active===t.id?pal.primary:'transparent', color:active===t.id?c.text:c.icon, fontWeight:active===t.id?600:400, fontSize:14, cursor:'pointer', fontFamily:'Inter,sans-serif', transition:'all 0.2s' }}>
+          <button key={t.id} onClick={()=>onTab(t.id)} style={{ display:'flex', alignItems:'center', gap:6, padding:'8px 18px', borderRadius:22, border:'none', background:active===t.id?pal.primary:'transparent', color:active===t.id?c.text:c.icon, fontWeight:active===t.id?600:400, fontSize:14, cursor:'pointer', fontFamily:'var(--app-font)', transition:'all 0.2s' }}>
             <Ic n={t.ic} s={15} c={active===t.id?c.text:c.icon} />
             {t.l}
           </button>
@@ -28,7 +28,7 @@ const Nav = ({ active, onTab, dark, pal }) => {
       </nav>
       <nav className="bot-nav" style={{ display:'none', position:'fixed', bottom:0, left:0, right:0, zIndex:100, background:navBg, borderTop:`1.5px solid ${c.border}`, padding:'8px 0 max(8px,env(safe-area-inset-bottom))', justifyContent:'space-around', backdropFilter:'blur(16px)' }}>
         {TABS.map(t => (
-          <button key={t.id} onClick={()=>onTab(t.id)} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'6px 12px', border:'none', background:'transparent', cursor:'pointer', fontFamily:'Inter,sans-serif' }}>
+          <button key={t.id} onClick={()=>onTab(t.id)} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:4, padding:'6px 12px', border:'none', background:'transparent', cursor:'pointer', fontFamily:'var(--app-font)' }}>
             <div style={{ width:36, height:36, borderRadius:12, background:active===t.id?pal.primary:'transparent', display:'flex', alignItems:'center', justifyContent:'center', transition:'background 0.2s' }}>
               <Ic n={t.ic} s={18} c={active===t.id?c.text:c.icon} />
             </div>
