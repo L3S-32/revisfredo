@@ -13,6 +13,7 @@ const App = () => {
   const [db, setDB]       = useState(loadDB);
   const [tab, setTab]     = useState('today');
   const [vw, setVw]       = useState(typeof window !== 'undefined' ? window.innerWidth : 1920);
+  const [helpOpen, setHelpOpen] = useState(false);
   const dark = prefs.darkMode;
   const pal  = PALETTES[prefs.palIdx] || PALETTES[0];
   const font = FONTS[prefs.fontIdx]   || FONTS[0];
@@ -32,6 +33,34 @@ const App = () => {
     const onResize = () => setVw(window.innerWidth);
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  /* Raccourcis clavier globaux. Ignore les saisies dans inputs/textareas. */
+  useEffect(() => {
+    const TAB_BY_NUM = ['today','fiches','reviser','planning','moi'];
+    const onKey = (e) => {
+      const t = e.target;
+      if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      const k = e.key.toLowerCase();
+      if (k === 'f') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+        e.preventDefault();
+      } else if (k === 'd') {
+        setPrefs(p => ({ ...p, darkMode: !p.darkMode }));
+        e.preventDefault();
+      } else if (e.key >= '1' && e.key <= '5') {
+        setTab(TAB_BY_NUM[parseInt(e.key, 10) - 1]);
+        e.preventDefault();
+      } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        setHelpOpen(true);
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
 
   /* zoom total = échelle auto (responsive) × préférence utilisateur */
@@ -84,6 +113,7 @@ const App = () => {
     <div style={{ minHeight:'100vh', background:c.bg, fontFamily:'var(--app-font)', transition:'background 0.4s ease', '--zoom': totalZoom }}>
       <Nav active={tab} onTab={setTab} dark={dark} pal={pal} />
       <div key={tab} className="slide-up" style={{ zoom: totalZoom }}>{screens[tab]}</div>
+      <HelpOverlay open={helpOpen} setOpen={setHelpOpen} pal={pal} dark={dark} />
     </div>
   );
 };
