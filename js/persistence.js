@@ -3,18 +3,33 @@
 /* ---------- Préférences UI (palette, dark mode) ---------- */
 const STORAGE_KEY = 'revisfredo-prefs';
 
+const defaultSounds = () => ({
+  enabled: true,
+  volume: 0.5,
+  categories: { click:true, tab:true, flip:true, answer:true, focus:true, toggle:true, modal:true },
+});
+
+const defaultPrefs = () => ({ darkMode:false, palIdx:0, textScale:1, fontIdx:0, sounds: defaultSounds() });
+
 const loadPrefs = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { darkMode:false, palIdx:0, textScale:1, fontIdx:0 };
+    if (!raw) return defaultPrefs();
     const p = JSON.parse(raw);
+    const s = p.sounds && typeof p.sounds === 'object' ? p.sounds : {};
+    const ds = defaultSounds();
     return {
       darkMode: !!p.darkMode,
       palIdx:  Number.isInteger(p.palIdx)  && p.palIdx  >= 0 && p.palIdx  < PALETTES.length ? p.palIdx  : 0,
       fontIdx: Number.isInteger(p.fontIdx) && p.fontIdx >= 0 && p.fontIdx < FONTS.length    ? p.fontIdx : 0,
       textScale: typeof p.textScale === 'number' && p.textScale >= 0.7 && p.textScale <= 1.5 ? p.textScale : 1,
+      sounds: {
+        enabled: typeof s.enabled === 'boolean' ? s.enabled : ds.enabled,
+        volume:  typeof s.volume  === 'number' && s.volume >= 0 && s.volume <= 1 ? s.volume : ds.volume,
+        categories: { ...ds.categories, ...(s.categories && typeof s.categories === 'object' ? s.categories : {}) },
+      },
     };
-  } catch { return { darkMode:false, palIdx:0, textScale:1, fontIdx:0 }; }
+  } catch { return defaultPrefs(); }
 };
 
 const savePrefs = (prefs) => {

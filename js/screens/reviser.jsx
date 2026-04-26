@@ -21,6 +21,9 @@ const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
   }, []);
 
   const answer = r => {
+    if (r === 'hard') Sound.answerHard();
+    else if (r === 'ok') Sound.answerOk();
+    else if (r === 'easy') Sound.answerEasy();
     const cur = CARDS[idx % CARDS.length];
     onRecord && onRecord({ mod: cur.mod, cardIdx: idx % CARDS.length, result: r });
     setResults(p => [...p, r]);
@@ -32,7 +35,7 @@ const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
   /* Raccourcis clavier : Espace = retourner, 1/2/3 = difficulté */
   useEffect(() => {
     const handler = e => {
-      if (e.code === 'Space') { e.preventDefault(); setFlipped(f => !f); }
+      if (e.code === 'Space') { e.preventDefault(); Sound.flip(); setFlipped(f => !f); }
       if (e.key === '1' && flippedRef.current) answerRef.current('hard');
       if (e.key === '2' && flippedRef.current) answerRef.current('ok');
       if (e.key === '3' && flippedRef.current) answerRef.current('easy');
@@ -90,7 +93,7 @@ const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
 
       {/* Zone centrale : carte + boutons + raccourcis */}
       <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', padding:'20px 28px', position:'relative', zIndex:2 }}>
-        <div className="flip-container" style={{ width:'100%', maxWidth:'min(100%, 1100px)', height:300 }} onClick={()=>setFlipped(f=>!f)}>
+        <div className="flip-container" style={{ width:'100%', maxWidth:'min(100%, 1100px)', height:300 }} onClick={()=>{ Sound.flip(); setFlipped(f=>!f); }}>
           <div className={`flip-face${flipped?' hidden':''}`} style={{ background:dark?c.cardDk:'white', borderRadius:22, padding:40, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', border:`1.5px solid ${c.border}`, cursor:'pointer' }}>
             <div style={{ fontSize:10, fontWeight:700, letterSpacing:'0.14em', textTransform:'uppercase', color:pal.primary, marginBottom:22 }}>Question</div>
             <p style={{ fontSize:23, fontWeight:600, color:dark?c.cardDkTxt:c.text, textAlign:'center', lineHeight:1.55, textWrap:'pretty' }}>{card.q}</p>
@@ -147,7 +150,7 @@ const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
                 {results.filter(r=>r==='easy').length} facile · {results.filter(r=>r==='ok').length} OK · {results.filter(r=>r==='hard').length} difficile
               </div>
               <button
-                onClick={() => { setShowEnd(false); setScoreVisible(false); setResults([]); setIdx(0); setFlipped(false); setSecs(0); }}
+                onClick={() => { Sound.click(); setShowEnd(false); setScoreVisible(false); setResults([]); setIdx(0); setFlipped(false); setSecs(0); }}
                 style={{ marginTop:28, padding:'14px 32px', background:c.cardDk, border:'none', borderRadius:16, color:c.cardDkTxt, fontSize:16, fontWeight:700, cursor:'pointer', fontFamily:'var(--app-font)' }}
               >
                 Recommencer

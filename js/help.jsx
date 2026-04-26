@@ -11,11 +11,12 @@ const SHORTCUTS = [
 
 const HelpOverlay = ({ open, setOpen, pal, dark }) => {
   const c = mkC(pal, dark);
+  const close = () => { Sound.modalClose(); setOpen(false); };
 
   /* Esc ferme la modale (et quitte aussi le plein écran nativement). */
   useEffect(() => {
     if (!open) return;
-    const onKey = (e) => { if (e.key === 'Escape') setOpen(false); };
+    const onKey = (e) => { if (e.key === 'Escape') close(); };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
@@ -24,7 +25,7 @@ const HelpOverlay = ({ open, setOpen, pal, dark }) => {
     <>
       {/* Bulle flottante */}
       <button
-        onClick={() => setOpen(true)}
+        onClick={() => { Sound.modalOpen(); setOpen(true); }}
         title="Aide & raccourcis (?)"
         aria-label="Aide"
         style={{
@@ -47,7 +48,7 @@ const HelpOverlay = ({ open, setOpen, pal, dark }) => {
       {/* Modale */}
       {open && (
         <div
-          onClick={() => setOpen(false)}
+          onClick={close}
           style={{
             position:'fixed', inset:0, zIndex:300,
             background:'rgba(0,0,0,0.32)',
@@ -71,7 +72,7 @@ const HelpOverlay = ({ open, setOpen, pal, dark }) => {
             }}
           >
             <button
-              onClick={() => setOpen(false)}
+              onClick={close}
               title="Fermer"
               aria-label="Fermer"
               style={{

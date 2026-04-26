@@ -1,10 +1,11 @@
 /* Écran "Moi" — profil éditable, statistiques, réglages, sélecteur de palette */
 
-const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkToggle, textScale, setTextScale, stats, userName, userSub, onUserName, onUserSub }) => {
+const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkToggle, textScale, setTextScale, sounds, setSounds, stats, userName, userSub, onUserName, onUserSub }) => {
   const c = mkC(pal, dark);
   const [subTab, setSubTab] = useState('profil');
-  const [sound, setSound] = useState(true);
   const [body, setBody] = useState(false);
+
+  const wrapToggle = (fn) => (v) => { v ? Sound.toggleOn() : Sound.toggleOff(); fn(v); };
 
   const weekTime = stats.weekTime;
   const monthSuccess = stats.monthSuccess;
@@ -41,10 +42,11 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkTo
         </div>
 
         <div style={{ display:'flex', background:`${pal.primary}15`, borderRadius:14, padding:4, gap:2, marginBottom:24, width:'fit-content' }}>
-          {[['profil','Profil'],['palette','Palette'],['visuel','Visuel']].map(([id,label]) => (
-            <button key={id} onClick={()=>setSubTab(id)} style={{ padding:'9px 22px', borderRadius:11, border:'none', background:subTab===id?pal.primary:'transparent', color:subTab===id?c.text:c.icon, fontWeight:600, fontSize:14, cursor:'pointer', fontFamily:'var(--app-font)', transition:'all 0.2s', display:'flex', alignItems:'center', gap:7 }}>
+          {[['profil','Profil'],['palette','Palette'],['visuel','Visuel'],['audio','Audio']].map(([id,label]) => (
+            <button key={id} onClick={()=>{ if (id !== subTab) Sound.click(); setSubTab(id); }} style={{ padding:'9px 22px', borderRadius:11, border:'none', background:subTab===id?pal.primary:'transparent', color:subTab===id?c.text:c.icon, fontWeight:600, fontSize:14, cursor:'pointer', fontFamily:'var(--app-font)', transition:'all 0.2s', display:'flex', alignItems:'center', gap:7 }}>
               {id==='palette' && <Ic n="palette" s={15} c={subTab===id?c.text:c.icon} />}
               {id==='visuel'  && <span style={{ fontSize:13, fontWeight:800, lineHeight:1, letterSpacing:'-0.02em' }}>Aa</span>}
+              {id==='audio'   && <Ic n="sound" s={15} c={subTab===id?c.text:c.icon} />}
               {label}
             </button>
           ))}
@@ -108,9 +110,9 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkTo
               <div style={{ fontSize:14, fontWeight:700, color:c.text, marginBottom:16 }}>Réglages rapides</div>
               <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
                 {[
-                  { l:'Dark mode',   d:'Interface sombre',               ic:'moon',  on:dark,  fn:onDarkToggle },
-                  { l:'Sons',        d:'Effets sonores de révision',      ic:'sound', on:sound, fn:setSound },
-                  { l:'Body double', d:'Mode co-révision silencieuse',    ic:'users', on:body,  fn:setBody },
+                  { l:'Dark mode',   d:'Interface sombre',                  ic:'moon',  on:dark,            fn:wrapToggle(onDarkToggle) },
+                  { l:'Sons',        d:'Effets sonores (config dans Audio)', ic:'sound', on:sounds.enabled, fn:(v)=>setSounds(s=>({...s, enabled:v})) },
+                  { l:'Body double', d:'Mode co-révision silencieuse',      ic:'users', on:body,            fn:wrapToggle(setBody) },
                 ].map(s => (
                   <div key={s.l} style={{ display:'flex', alignItems:'center', gap:14 }}>
                     <div style={{ width:38, height:38, borderRadius:11, background:`${pal.primary}18`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
@@ -142,7 +144,7 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkTo
                     ].map(opt => {
                       const active = Math.abs((textScale||1) - opt.v) < 0.01;
                       return (
-                        <button key={opt.v} onClick={()=>setTextScale(opt.v)}
+                        <button key={opt.v} onClick={()=>{ Sound.click(); setTextScale(opt.v); }}
                           style={{ minWidth:34, padding:'4px 8px', borderRadius:9, border:'none',
                             background: active ? pal.primary : 'transparent',
                             color: active ? c.text : c.icon,
@@ -171,7 +173,7 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkTo
                 return (
                   <div
                     key={f.id}
-                    onClick={() => setFontIdx(i)}
+                    onClick={() => { if (i !== fontIdx) Sound.click(); setFontIdx(i); }}
                     style={{ background:c.surf, borderRadius:18, padding:'18px 20px', cursor:'pointer', border:`2px solid ${isActive?pal.primary:'transparent'}`, transition:'all 0.2s', position:'relative' }}
                   >
                     <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
@@ -203,7 +205,7 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkTo
                 return (
                   <div
                     key={p.id}
-                    onClick={() => setPalIdx(i)}
+                    onClick={() => { if (i !== palIdx) Sound.click(); setPalIdx(i); }}
                     style={{ background:p.bg, borderRadius:18, padding:'16px', cursor:'pointer', border:`2px solid ${isActive?p.primary:'transparent'}`, transition:'all 0.2s', position:'relative', overflow:'hidden' }}
                   >
                     <div style={{ display:'flex', gap:5, marginBottom:12 }}>
@@ -224,6 +226,90 @@ const MoiScreen = ({ dark, pal, palIdx, setPalIdx, fontIdx, setFontIdx, onDarkTo
             </div>
           </div>
         )}
+
+        {subTab === 'audio' && (() => {
+          const setVol = (v) => setSounds(s => ({ ...s, volume: v }));
+          const toggleCat = (id) => setSounds(s => ({ ...s, categories: { ...s.categories, [id]: !s.categories[id] } }));
+          const previewByCat = {
+            click:  () => Sound.click(),
+            tab:    () => Sound.tabSwitch(),
+            flip:   () => Sound.flip(),
+            answer: () => Sound.answerEasy(),
+            focus:  () => Sound.focusOn(),
+            toggle: () => Sound.toggleOn(),
+            modal:  () => Sound.modalOpen(),
+          };
+          const VOLS = [{ v:0.25, l:'Faible' }, { v:0.50, l:'Moyen' }, { v:0.85, l:'Fort' }];
+          return (
+            <div>
+              <p style={{ fontSize:14, color:c.icon, marginBottom:20, lineHeight:1.6 }}>Active ou désactive chaque type de son. Clique sur <b>Tester</b> pour entendre l'effet.</p>
+
+              {/* Bloc maître : enable + volume */}
+              <Card bg={c.surf} style={{ padding:22, border:`1.5px solid ${c.border}`, marginBottom:18 }}>
+                <div style={{ display:'flex', alignItems:'center', gap:14, marginBottom:18 }}>
+                  <div style={{ width:38, height:38, borderRadius:11, background:`${pal.primary}18`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Ic n="sound" s={18} c={c.icon} />
+                  </div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:14, fontWeight:600, color:c.text }}>Sons activés</div>
+                    <div style={{ fontSize:12, color:c.icon, opacity:0.7 }}>Coupe tous les effets sonores d'un coup</div>
+                  </div>
+                  <Toggle on={sounds.enabled} onChange={(v) => setSounds(s => ({ ...s, enabled: v }))} color={pal.primary} />
+                </div>
+
+                <div style={{ display:'flex', alignItems:'center', gap:14, opacity: sounds.enabled ? 1 : 0.45, transition:'opacity 0.18s' }}>
+                  <div style={{ width:38, height:38, borderRadius:11, background:`${pal.primary}18`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, fontSize:15, fontWeight:800, color:c.icon }}>♪</div>
+                  <div style={{ flex:1 }}>
+                    <div style={{ fontSize:14, fontWeight:600, color:c.text }}>Volume</div>
+                    <div style={{ fontSize:12, color:c.icon, opacity:0.7 }}>Niveau global appliqué à tous les sons</div>
+                  </div>
+                  <div style={{ display:'flex', gap:3, background:`${pal.primary}12`, borderRadius:11, padding:3 }}>
+                    {VOLS.map(opt => {
+                      const active = Math.abs(sounds.volume - opt.v) < 0.01;
+                      return (
+                        <button key={opt.v} onClick={() => { setVol(opt.v); setTimeout(() => Sound.click(), 0); }} disabled={!sounds.enabled}
+                          style={{ padding:'6px 14px', borderRadius:9, border:'none',
+                            background: active ? pal.primary : 'transparent',
+                            color: active ? c.text : c.icon,
+                            fontSize:12, fontWeight:700, cursor: sounds.enabled ? 'pointer' : 'not-allowed', fontFamily:'var(--app-font)',
+                            transition:'all 0.18s', lineHeight:1 }}>
+                          {opt.l}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Card>
+
+              {/* Catégories par type */}
+              <div style={{ fontSize:11, fontWeight:700, letterSpacing:'0.11em', textTransform:'uppercase', color:c.icon, opacity:0.6, marginBottom:10 }}>
+                Catégories
+              </div>
+              <div style={{ display:'flex', flexDirection:'column', gap:10, opacity: sounds.enabled ? 1 : 0.45, transition:'opacity 0.18s' }}>
+                {SOUND_CATEGORIES.map(cat => {
+                  const on = sounds.categories[cat.id] !== false;
+                  return (
+                    <div key={cat.id} style={{ display:'flex', alignItems:'center', gap:14, padding:'12px 16px', borderRadius:14, background:c.surf, border:`1.5px solid ${c.border}` }}>
+                      <div style={{ flex:1 }}>
+                        <div style={{ fontSize:14, fontWeight:600, color:c.text }}>{cat.label}</div>
+                        <div style={{ fontSize:12, color:c.icon, opacity:0.7 }}>{cat.desc}</div>
+                      </div>
+                      <button onClick={() => previewByCat[cat.id]?.()} disabled={!sounds.enabled || !on}
+                        style={{ padding:'6px 14px', borderRadius:10, border:`1.5px solid ${c.border}`,
+                          background:'transparent', color:c.icon, fontSize:12, fontWeight:600,
+                          cursor: (sounds.enabled && on) ? 'pointer' : 'not-allowed',
+                          opacity: (sounds.enabled && on) ? 1 : 0.45,
+                          fontFamily:'var(--app-font)' }}>
+                        Tester
+                      </button>
+                      <Toggle on={on} onChange={() => toggleCat(cat.id)} color={pal.primary} />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
       </div>
     </div>
   );

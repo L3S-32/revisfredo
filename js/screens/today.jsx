@@ -7,6 +7,9 @@ const TodayScreen = ({ dark, pal, onNav, streak, nextTest, weekSuccess, onRecord
   const card = CARDS[cIdx % CARDS.length];
 
   const answer = r => {
+    if (r === 'hard') Sound.answerHard();
+    else if (r === 'ok') Sound.answerOk();
+    else if (r === 'easy') Sound.answerEasy();
     onRecord && onRecord({ mod: card.mod, cardIdx: cIdx % CARDS.length, result: r });
     setFlipped(false);
     setTimeout(() => setCIdx(p => p + 1), 260);
@@ -37,13 +40,13 @@ const TodayScreen = ({ dark, pal, onNav, streak, nextTest, weekSuccess, onRecord
             </div>
             <div style={{ display:'flex', gap:10, alignItems:'center' }}>
               <span style={{ fontSize:12, color:c.cardDkTxt, opacity:0.4 }}>{(cIdx%CARDS.length)+1}/{CARDS.length}</span>
-              <button onClick={() => { setFlipped(false); setCIdx(p=>p+1); }} style={{ width:38, height:38, borderRadius:'50%', background:`${pal.primary}25`, border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+              <button onClick={() => { Sound.click(); setFlipped(false); setCIdx(p=>p+1); }} style={{ width:38, height:38, borderRadius:'50%', background:`${pal.primary}25`, border:'none', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
                 <Ic n="refresh" s={16} c={pal.primary} />
               </button>
             </div>
           </div>
 
-          <div className="flip-container" style={{ flex:1, minHeight:0, position:'relative', zIndex:1 }} onClick={() => setFlipped(f=>!f)}>
+          <div className="flip-container" style={{ flex:1, minHeight:0, position:'relative', zIndex:1 }} onClick={() => { Sound.flip(); setFlipped(f=>!f); }}>
             <div className={`flip-face${flipped?' hidden':''}`} style={{ background:`${pal.primary}18`, borderRadius:16, padding:28, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
               <p style={{ fontSize:21, fontWeight:600, color:c.cardDkTxt, textAlign:'center', lineHeight:1.5, textWrap:'pretty' }}>{card.q}</p>
               <div style={{ marginTop:14, fontSize:11, color:c.cardDkTxt, opacity:0.35 }}>Cliquer pour retourner</div>

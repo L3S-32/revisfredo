@@ -18,8 +18,10 @@ const App = () => {
 
   /* Toggle plein écran — appelé par le raccourci F et par les boutons "Focus" in-app. */
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    const entering = !document.fullscreenElement;
+    if (entering) document.documentElement.requestFullscreen?.();
     else document.exitFullscreen?.();
+    entering ? Sound.focusOn() : Sound.focusOff();
   };
 
   /* Synchronise isFullscreen avec l'état réel du navigateur (couvre Esc, F, bouton…) */
@@ -28,6 +30,9 @@ const App = () => {
     document.addEventListener('fullscreenchange', onFs);
     return () => document.removeEventListener('fullscreenchange', onFs);
   }, []);
+
+  /* Pousse la config audio dans le module Sound à chaque changement de prefs. */
+  useEffect(() => { Sound.configure(prefs.sounds); }, [prefs.sounds]);
   const dark = prefs.darkMode;
   const pal  = PALETTES[prefs.palIdx] || PALETTES[0];
   const font = FONTS[prefs.fontIdx]   || FONTS[0];
@@ -62,13 +67,15 @@ const App = () => {
         toggleFullscreen();
         e.preventDefault();
       } else if (k === 'd') {
-        setPrefs(p => ({ ...p, darkMode: !p.darkMode }));
+        setPrefs(p => { const nd = !p.darkMode; nd ? Sound.toggleOn() : Sound.toggleOff(); return { ...p, darkMode: nd }; });
         e.preventDefault();
       } else if (e.key >= '1' && e.key <= '5') {
         setTab(TAB_BY_NUM[parseInt(e.key, 10) - 1]);
+        Sound.tabSwitch();
         e.preventDefault();
       } else if (e.key === '?' || (e.shiftKey && e.key === '/')) {
         setHelpOpen(true);
+        Sound.modalOpen();
         e.preventDefault();
       }
     };
@@ -83,6 +90,7 @@ const App = () => {
   const setFontIdx    = (v) => setPrefs(p => ({ ...p, fontIdx: v }));
   const onDarkToggle  = (v) => setPrefs(p => ({ ...p, darkMode: v }));
   const setTextScale  = (v) => setPrefs(p => ({ ...p, textScale: v }));
+  const setSounds     = (updater) => setPrefs(p => ({ ...p, sounds: typeof updater === 'function' ? updater(p.sounds) : updater }));
 
   const recordAnswer = ({ mod, cardIdx, result }) => {
     setDB(d => ({ ...d, history: [...d.history, { ts: Date.now(), mod, cardIdx, result }] }));
@@ -116,6 +124,7 @@ const App = () => {
     moi:      <MoiScreen      {...props} palIdx={prefs.palIdx} setPalIdx={setPalIdx} onDarkToggle={onDarkToggle}
                               fontIdx={prefs.fontIdx} setFontIdx={setFontIdx}
                               textScale={prefs.textScale} setTextScale={setTextScale}
+                              sounds={prefs.sounds} setSounds={setSounds}
                               stats={stats} userName={db.userName} userSub={db.userSub}
                               onUserName={setUserName} onUserSub={setUserSub} />,
   };
@@ -124,7 +133,7 @@ const App = () => {
      de diviser leur hauteur pour compenser le zoom rendu. */
   return (
     <div style={{ minHeight:'100vh', background:c.bg, fontFamily:'var(--app-font)', transition:'background 0.4s ease', '--zoom': totalZoom }}>
-      <Nav active={tab} onTab={setTab} dark={dark} pal={pal} />
+      <Nav active={tab} onTab={(id) => { if (id !== tab) Sound.tabSwitch(); setTab(id); }} dark={dark} pal={pal} />
       <div key={tab} className="slide-up" style={{ zoom: totalZoom }}>{screens[tab]}</div>
       <HelpOverlay open={helpOpen} setOpen={setHelpOpen} pal={pal} dark={dark} />
     </div>
