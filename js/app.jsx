@@ -119,7 +119,7 @@ const App = () => {
   const screens = {
     today:    <TodayScreen    {...props} onNav={setTab} streak={stats.streak} nextTest={stats.nextTest} weekSuccess={stats.weekSuccess} onRecord={recordAnswer} focus={isFullscreen} onToggleFocus={toggleFullscreen} />,
     fiches:   <FichesScreen   {...props} onNav={setTab} />,
-    reviser:  <ReviserScreen  {...props} onRecord={recordAnswer} focusMode={isFullscreen} onToggleFocus={toggleFullscreen} />,
+    reviser:  <ReviserScreen  {...props} onNav={setTab} onRecord={recordAnswer} focusMode={isFullscreen} onToggleFocus={toggleFullscreen} />,
     planning: <PlanningScreen {...props} tests={db.tests} onAddTest={addTest} onRemoveTest={removeTest} />,
     moi:      <MoiScreen      {...props} palIdx={prefs.palIdx} setPalIdx={setPalIdx} onDarkToggle={onDarkToggle}
                               fontIdx={prefs.fontIdx} setFontIdx={setFontIdx}

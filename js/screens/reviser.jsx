@@ -1,6 +1,6 @@
 /* Écran "Réviser" — session immersive plein écran, raccourcis clavier, écran de fin animé */
 
-const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
+const ReviserScreen = ({ dark, pal, onNav, onRecord, focusMode, onToggleFocus }) => {
   const [idx, setIdx]                   = useState(0);
   const [flipped, setFlipped]           = useState(false);
   const [results, setResults]           = useState([]);
@@ -66,10 +66,18 @@ const ReviserScreen = ({ dark, pal, onRecord, focusMode, onToggleFocus }) => {
         <div style={{ height:'100%', width:`${(results.length/CARDS.length)*100}%`, background:pal.primary, borderRadius:2, transition:'width 0.5s ease' }} />
       </div>
 
-      {/* Top bar — module, compteur, chrono, focus */}
+      {/* Top bar — retour, module, compteur, chrono, focus */}
       {!focusMode && (
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', padding:'14px 28px', position:'relative', zIndex:2 }}>
           <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+            <button
+              onClick={() => { Sound.click(); onNav && onNav('fiches'); }}
+              title="Retour aux fiches"
+              aria-label="Retour"
+              style={{ display:'flex', alignItems:'center', gap:6, padding:'7px 12px', borderRadius:10, background:'transparent', border:`1.5px solid ${c.border}`, color:c.icon, fontSize:12, fontWeight:500, cursor:'pointer', fontFamily:'var(--app-font)' }}
+            >
+              <Ic n="chevL" s={14} c={c.icon} />Retour
+            </button>
             <span style={{ background:pal.primary, color:c.text, fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:8 }}>{card.mod}</span>
             <span style={{ fontSize:13, color:c.icon, opacity:0.8 }}>{(idx%CARDS.length)+1} / {CARDS.length}</span>
           </div>
