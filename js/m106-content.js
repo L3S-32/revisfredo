@@ -1,6 +1,13 @@
 /* Contenu pédagogique du module M106 — Maintenance BDD Oracle.
    Utilisé par les écrans "Préparation Exam" et "Résumé".
-   Structure : 4 thèmes (résumé + questions) + section transversale + 10 pièges. */
+
+   Le champ `summary` est un mini-format markdown :
+     • paragraphes séparés par lignes vides
+     • titres : "## Heading"
+     • gras   : **texte**
+     • code   : `texte`
+     • listes : lignes commençant par "• " ou "- "
+     • table  : lignes commençant par "|" (1ère ligne = en-tête) */
 
 const M106_CONTENT = {
   themes: [
@@ -11,15 +18,25 @@ const M106_CONTENT = {
       emoji: '🐳',
       title: 'Environnement Oracle',
       subtitle: 'Docker, SQL Developer, schémas',
-      summary: `Oracle ne s'installe pas directement comme MySQL : il tourne dans un conteneur Docker (Oracle XE), géré via Docker Desktop (qui dépend de WSL sur Windows). Il faut démarrer Docker avant toute commande, et basculer MySQL → Oracle en début de journée.
+      summary: `## Résumé
 
-On interagit avec la base via SQL Developer, dans lequel on crée deux connexions distinctes avec l'utilisateur system / mot de passe manager :
-• CDB (Container Database) → cocher SID = XE
-• PDB (Pluggable Database) → cocher Service Name = XEPDB1
+Oracle ne s'installe pas directement comme MySQL : il tourne dans un **conteneur Docker** (Oracle XE), géré via **Docker Desktop** (qui dépend de WSL sur Windows). Il faut démarrer Docker avant toute commande, et basculer MySQL→Oracle en début de journée.
 
-Différence clé Oracle vs MySQL : en MySQL, CREATE DATABASE ≈ CREATE SCHEMA. En Oracle, une seule instance physique contient plusieurs schémas, et un schéma = un utilisateur (relation 1:1). Créer un utilisateur magasin crée automatiquement le schéma magasin. Pour pointer vers un objet d'un autre schéma : magasin.client.
+On interagit avec la base via **SQL Developer**, dans lequel on crée deux connexions distinctes avec l'utilisateur \`system\` / mot de passe \`manager\` :
 
-Outils annexes : winget pour installer SQL Developer, PURGE RECYCLE BIN pour vider la corbeille Oracle (objets nommés BIN…), et le script de suppression global à exécuter depuis SYSTEM pour repartir propre.`,
+| Connexion | Type | Valeur |
+| CDB | SID | \`XE\` |
+| PDB | Service Name | \`XEPDB1\` |
+
+## Différence Oracle vs MySQL
+
+En MySQL, \`CREATE DATABASE ≈ CREATE SCHEMA\`. En Oracle, une seule instance physique contient plusieurs schémas, et un **schéma = un utilisateur** (relation 1:1). Créer un utilisateur \`magasin\` crée automatiquement le schéma \`magasin\`. Pour pointer vers un objet d'un autre schéma : \`magasin.client\`.
+
+## Outils annexes
+
+• \`winget\` pour installer SQL Developer
+• \`PURGE RECYCLE BIN\` pour vider la corbeille Oracle (objets nommés \`BIN…\`)
+• Script de suppression global à exécuter depuis \`SYSTEM\` pour repartir propre`,
       questions: [
         { type:'cours', q:"Pourquoi Oracle tourne-t-il dans un conteneur Docker plutôt qu'installé directement sur la machine ?" },
         { type:'cours', q:"De quoi Docker Desktop dépend-il sur Windows ? Que faire en cas d'erreur persistante ?" },
@@ -54,28 +71,35 @@ Outils annexes : winget pour installer SQL Developer, PURGE RECYCLE BIN pour vid
       id: 't2',
       num: 2,
       emoji: '🧩',
-      title: 'Modélisation MCD → MLD → MPD',
-      subtitle: 'Cas concret : magasin',
-      summary: `Concevoir une base de données suit trois étapes dans l'ordre :
+      title: 'Cas magasin — Entités et relations',
+      subtitle: 'MCD → MLD → MPD',
+      summary: `## Résumé
 
-• MCD (Conceptuel) — "Quoi ?" — Public : client, métier — Entités, associations, cardinalités (0..*, 1..*, 0..1). Indépendant du SGBDR.
-• MLD (Logique) — "Comment ?" — Public : développeur — Tables, PK/FK, tables associatives, types génériques. Encore indépendant du moteur.
-• MPD (Physique) — "Avec quoi ?" — Public : DBA / code — Script SQL CREATE TABLE pour un SGBDR précis (Oracle, MySQL).
+Concevoir une base de données suit trois étapes dans l'ordre :
 
-Cas magasin — entités identifiées :
-• Client : id, nom, prénom, rue/n°, téléphone, e-mail, date de naissance, titre (Monsieur / Madame)
-• Produit : nom, prix, description, IAN
-• Commande : id, date, état
-• Catégorie : entité séparée (pas un simple attribut de Produit, car réutilisée)
-• Localité/NPA : entité séparée pour factoriser ville + NPA (évite les redondances)
-• Commande_Produit : table associative (relation N:N) qui stocke quantité et prix au moment de l'achat → permet d'historiser le prix même si le produit change de tarif plus tard.
+| Modèle | Question | Public | Contenu |
+| **MCD** | Quoi ? | Client, métier | Entités, associations, cardinalités. Indépendant du SGBDR. |
+| **MLD** | Comment ? | Développeur | Tables, PK/FK, tables associatives, types génériques. |
+| **MPD** | Avec quoi ? | DBA / code | Script SQL \`CREATE TABLE\` pour un SGBDR précis. |
 
-Cardinalités clés :
-• Client (0..*) ↔ (1,1) Commande (pas de commande orpheline)
-• Commande (1..*) ↔ (0..*) Produit (une commande a au moins 1 produit)
-• Produit (1,1) → (0..* ou 1..*) Catégorie
+## Cas magasin — entités identifiées
 
-Règle d'or du MLD → MPD : on crée d'abord les tables sans FK (Localité, Catégorie), puis les tables qui référencent (Client, Produit), et enfin les tables associatives (Commande_Produit).`,
+• **Client** : id, nom, prénom, rue/n°, téléphone, e-mail, date de naissance, titre (Monsieur / Madame)
+• **Produit** : nom, prix, description, IAN
+• **Commande** : id, date, état
+• **Catégorie** : entité séparée (pas un simple attribut de Produit, car réutilisée)
+• **Localité / NPA** : entité séparée pour factoriser ville + NPA (évite les redondances)
+• **Commande_Produit** : table associative (relation N:N) qui stocke quantité et prix au moment de l'achat → permet d'historiser le prix même si le produit change de tarif plus tard
+
+## Cardinalités clés
+
+• Client \`(0..*)\` ↔ \`(1,1)\` Commande — pas de commande orpheline
+• Commande \`(1..*)\` ↔ \`(0..*)\` Produit — une commande a au moins 1 produit
+• Produit \`(1,1)\` → \`(0..* ou 1..*)\` Catégorie
+
+## Règle d'or MLD → MPD
+
+On crée d'abord les tables sans FK (Localité, Catégorie), puis les tables qui référencent (Client, Produit), et enfin les tables associatives (Commande_Produit).`,
       questions: [
         { type:'cours', q:"Que signifient les acronymes MCD, MLD, MPD ?" },
         { type:'cours', q:"Dans quel ordre produit-on ces trois modèles et pourquoi cet ordre ?" },
@@ -116,32 +140,44 @@ Règle d'or du MLD → MPD : on crée d'abord les tables sans FK (Localité, Cat
       emoji: '🏗️',
       title: 'DDL et contraintes Oracle',
       subtitle: 'Implémentation physique',
-      summary: `Le LDD (Langage de Définition de Données, DDL en anglais) = tout ce qui crée/modifie la structure : CREATE TABLE, ALTER TABLE, DROP.
+      summary: `## Résumé
 
-Types Oracle à retenir :
-• VARCHAR2(n) pour les chaînes (allocation dynamique, préféré à VARCHAR)
-• NUMBER pour les entiers et décimaux
-• Règle sur les codes : un numéro/code sans calcul (NPA, IAN, téléphone) → VARCHAR2, jamais NUMBER (pour garder les zéros à gauche et les préfixes).
+Le **LDD** (Langage de Définition de Données, DDL en anglais) = tout ce qui crée ou modifie la structure : \`CREATE TABLE\`, \`ALTER TABLE\`, \`DROP\`.
 
-Clés primaires auto-générées :
-• MySQL : AUTO_INCREMENT
-• Oracle ancien : séquence + trigger BEFORE INSERT (lourd)
-• Oracle moderne (12c+) : GENERATED BY DEFAULT AS IDENTITY ← méthode recommandée, permet d'insérer avec ou sans valeur de PK.
+## Types Oracle à retenir
 
-Les contraintes à maîtriser :
-• PRIMARY KEY — identifiant unique + non nul — préfixe CTPK_ ou PK_
-• FOREIGN KEY — intégrité référentielle — CTFK_ ou FK_
-• UNIQUE — valeur unique (mais peut être nulle) — CTUK_ ou UK_
-• NOT NULL — valeur obligatoire — CTNN_ ou NN_
-• CHECK — règle métier (ex : âge > 0) — CTCK_ ou CK_
+• \`VARCHAR2(n)\` pour les chaînes (allocation dynamique, préféré à \`VARCHAR\`)
+• \`NUMBER\` pour les entiers et décimaux
+• **Règle codes** : un numéro/code sans calcul (NPA, IAN, téléphone) → \`VARCHAR2\`, jamais \`NUMBER\` (pour garder les zéros à gauche et les préfixes)
 
-Règle absolue : toujours NOMMER ses contraintes avec CONSTRAINT nom_explicite … . Ça permet d'avoir des messages d'erreur compréhensibles au lieu d'un ORA-00001: SYS_C007234 illisible.
+## Clés primaires auto-générées
 
-Propriétés d'une PK : unique, non nulle, non porteuse d'information (ne JAMAIS mettre un numéro AVS, un email, un code produit en PK → préférer un ID technique auto-généré).
+• MySQL : \`AUTO_INCREMENT\`
+• Oracle ancien : séquence + trigger \`BEFORE INSERT\` (lourd)
+• Oracle moderne (12c+) : \`GENERATED BY DEFAULT AS IDENTITY\` ← méthode recommandée, permet d'insérer avec ou sans valeur de PK
 
-Documentation dans la base : COMMENT ON TABLE client IS 'Table des clients du magasin'; et COMMENT ON COLUMN client.titre IS 'Monsieur ou Madame';. Évite la désync avec des docs externes.
+## Les 5 contraintes à maîtriser
 
-Exemple pour l'exercice 1.3 : CHECK (titre IN ('Monsieur','Madame')) et CHECK (etat_commande IN (1, 9)).`,
+| Contrainte | Rôle | Préfixe |
+| \`PRIMARY KEY\` | Identifiant unique + non nul | \`CTPK_\` ou \`PK_\` |
+| \`FOREIGN KEY\` | Intégrité référentielle | \`CTFK_\` ou \`FK_\` |
+| \`UNIQUE\` | Valeur unique (mais peut être nulle) | \`CTUK_\` ou \`UK_\` |
+| \`NOT NULL\` | Valeur obligatoire | \`CTNN_\` ou \`NN_\` |
+| \`CHECK\` | Règle métier (ex : âge > 0) | \`CTCK_\` ou \`CK_\` |
+
+## Règle absolue
+
+Toujours **NOMMER** ses contraintes avec \`CONSTRAINT nom_explicite ...\`. Ça permet d'avoir des messages d'erreur compréhensibles au lieu d'un \`ORA-00001: SYS_C007234\` illisible.
+
+## Propriétés d'une PK
+
+Unique, non nulle, **non porteuse d'information** : ne JAMAIS mettre un numéro AVS, un email ou un code produit en PK → préférer un ID technique auto-généré.
+
+## Documentation dans la base
+
+\`COMMENT ON TABLE client IS 'Table des clients du magasin';\` et \`COMMENT ON COLUMN client.titre IS 'Monsieur ou Madame';\`. Évite la désync avec des docs externes.
+
+Exemple pour l'exercice 1.3 : \`CHECK (titre IN ('Monsieur','Madame'))\` et \`CHECK (etat_commande IN (1, 9))\`.`,
       questions: [
         { type:'cours', q:"Quels sont les 4 sous-langages du SQL ? Donne leur nom complet et un exemple de commande pour chacun." },
         { type:'cours', q:"Quel sous-langage contient CREATE TABLE ?" },
@@ -184,41 +220,52 @@ Exemple pour l'exercice 1.3 : CHECK (titre IN ('Monsieur','Madame')) et CHECK (e
       id: 't4',
       num: 4,
       emoji: '🔐',
-      title: 'Gestion des droits',
-      subtitle: 'DCL, rôles, GRANT/REVOKE',
-      summary: `Le LCD (Langage de Contrôle des Données, DCL) gère qui a le droit de faire quoi. Deux commandes principales :
-• GRANT : attribuer un droit
-• REVOKE : retirer un droit
+      title: 'Gestion des droits — DCL et rôles',
+      subtitle: 'GRANT / REVOKE',
+      summary: `## Résumé
 
-Deux types de privilèges :
-• Système : CREATE SESSION, CREATE TABLE, CREATE VIEW — actions globales sur la base
-• Objet : SELECT, INSERT, UPDATE, DELETE sur magasin.client — sur un objet précis
+Le **LCD** (Langage de Contrôle des Données, DCL) gère qui a le droit de faire quoi. Deux commandes principales :
 
-La bonne pratique = les rôles, pas les droits individuels. Le workflow en 4 étapes :
+• \`GRANT\` : attribuer un droit
+• \`REVOKE\` : retirer un droit
 
-  -- 1. Créer le rôle
-  CREATE ROLE commercial;
+## Deux types de privilèges
 
-  -- 2. Attribuer les privilèges au rôle
-  GRANT SELECT, INSERT ON magasin.client TO commercial;
-  GRANT SELECT ON magasin.produit TO commercial;
+| Type | Exemples | Portée |
+| **Système** | \`CREATE SESSION\`, \`CREATE TABLE\`, \`CREATE VIEW\` | Actions globales sur la base |
+| **Objet** | \`SELECT\`, \`INSERT\`, \`UPDATE\`, \`DELETE\` sur \`magasin.client\` | Sur un objet précis |
 
-  -- 3. Créer l'utilisateur avec son droit de connexion
-  CREATE USER Paul IDENTIFIED BY motDePasse;
-  GRANT CREATE SESSION TO Paul;
+## Workflow recommandé : les rôles
 
-  -- 4. Assigner le rôle à l'utilisateur
-  GRANT commercial TO Paul;
+\`\`\`sql
+-- 1. Créer le rôle
+CREATE ROLE commercial;
 
-Pourquoi les rôles ? Si tu as 50 commerciaux et tu dois modifier leurs droits, tu modifies un seul rôle au lieu de 50 utilisateurs.
+-- 2. Attribuer les privilèges au rôle
+GRANT SELECT, INSERT ON magasin.client TO commercial;
+GRANT SELECT ON magasin.produit TO commercial;
 
-⚠️ À éviter : les rôles prédéfinis d'Oracle (CONNECT, RESOURCE) :
+-- 3. Créer l'utilisateur avec son droit de connexion
+CREATE USER Paul IDENTIFIED BY motDePasse;
+GRANT CREATE SESSION TO Paul;
+
+-- 4. Assigner le rôle à l'utilisateur
+GRANT commercial TO Paul;
+\`\`\`
+
+**Pourquoi les rôles ?** Si tu as 50 commerciaux et tu dois modifier leurs droits, tu modifies un seul rôle au lieu de 50 utilisateurs.
+
+## ⚠️ À éviter
+
+Les rôles prédéfinis d'Oracle (\`CONNECT\`, \`RESOURCE\`) :
+
 • Ils donnent trop de droits (violation du principe du moindre privilège)
 • Leur contenu change entre les versions d'Oracle → comportement imprévisible
 
-La délégation de droits — nuance importante :
-• WITH GRANT OPTION (privilèges d'objet) : « tu peux redonner ce droit à d'autres ». Si on te le retire, ça s'applique en cascade à ceux à qui tu l'as donné.
-• WITH ADMIN OPTION (privilèges système) : même idée, mais PAS de cascade à la révocation.`,
+## Délégation de droits
+
+• \`WITH GRANT OPTION\` (privilèges d'objet) : « tu peux redonner ce droit à d'autres ». Si on te le retire, ça s'applique en **cascade** à ceux à qui tu l'as donné.
+• \`WITH ADMIN OPTION\` (privilèges système) : même idée, mais **PAS de cascade** à la révocation.`,
       questions: [
         { type:'cours', q:"Que signifie l'acronyme DCL (LCD) ? Quelle est sa fonction ?" },
         { type:'cours', q:"Cite les deux commandes principales du DCL." },
@@ -261,18 +308,24 @@ La délégation de droits — nuance importante :
       emoji: '🟨',
       title: 'Questions transversales',
       subtitle: 'Synthèse des 4 thèmes',
-      summary: `Cette section regroupe des questions qui cumulent plusieurs thèmes (modélisation, DDL, DCL, environnement) ainsi qu'un cas pratique final de synthèse.
+      summary: `## Résumé
 
-Cas final — Système de location de vélos :
-On te demande de modéliser et implémenter un petit système de location de vélos avec : clients, vélos, locations, stations.
+Cette section regroupe des questions qui cumulent plusieurs thèmes (modélisation, DDL, DCL, environnement) ainsi qu'un cas pratique final de synthèse.
+
+## Cas final — Système de location de vélos
+
+On te demande de modéliser et implémenter un petit système de location de vélos avec : **clients**, **vélos**, **locations**, **stations**.
+
 Une location a un client, un vélo, une station de départ, une station d'arrivée, une date/heure de début, une date/heure de fin, et un prix calculé.
 
-Étapes attendues :
-1. Dessine le MCD avec cardinalités justifiées.
-2. Traduis-le en MLD (liste toutes les tables avec PK et FK).
-3. Dans quel ordre créer les tables ?
-4. Écris le CREATE TABLE complet de la table location avec toutes les contraintes nommées et au moins deux CHECK.
-5. Crée un rôle employe_station qui peut lire tous les clients/vélos/stations et insérer/modifier des locations. Crée l'utilisateur Lucas et attribue-lui ce rôle.`,
+## Étapes attendues
+
+• Dessine le **MCD** avec cardinalités justifiées
+• Traduis-le en **MLD** (liste toutes les tables avec PK et FK)
+• Détermine l'ordre de création des tables
+• Écris le \`CREATE TABLE\` complet de la table \`location\` avec toutes les contraintes nommées et au moins **deux CHECK**
+• Crée un rôle \`employe_station\` qui peut lire tous les clients/vélos/stations et insérer/modifier des locations
+• Crée l'utilisateur \`Lucas\` et attribue-lui ce rôle`,
       questions: [
         { type:'cours', q:"Décris le parcours complet d'un projet de base de données, depuis la réunion avec le client jusqu'à l'utilisateur final qui se connecte et fait une requête. Cite tous les concepts vus (MCD, MLD, MPD, DDL, DCL, rôles)." },
         { type:'cours', q:"Un développeur te dit : « J'ai créé mes tables, j'ai inséré des données, mais je n'arrive pas à me connecter avec mon nouvel utilisateur. » Quelle est probablement l'erreur ?" },
