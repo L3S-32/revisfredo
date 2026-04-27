@@ -95,6 +95,15 @@ const App = () => {
   const recordAnswer = ({ mod, cardIdx, result }) => {
     setDB(d => ({ ...d, history: [...d.history, { ts: Date.now(), mod, cardIdx, result }] }));
   };
+  /* Stat par thème pour l'écran "Préparation Exam" :
+     incrémente attempts à chaque question répondue, missed seulement si la réponse est ratée. */
+  const recordExam = ({ mod, theme, missed }) => {
+    setDB(d => {
+      const prev = d.examStats?.[mod]?.[theme] || { attempts:0, missed:0 };
+      const next = { attempts: prev.attempts + 1, missed: prev.missed + (missed ? 1 : 0) };
+      return { ...d, examStats: { ...d.examStats, [mod]: { ...(d.examStats?.[mod] || {}), [theme]: next } } };
+    });
+  };
   const addTest = (t) => {
     setDB(d => ({ ...d, tests: [...d.tests, { id: Date.now() + Math.random().toString(36).slice(2,6), ...t }] }));
   };
@@ -115,11 +124,16 @@ const App = () => {
     nextTest:      getNextTest(db.tests),
   };
 
+  /* navTo accepte un 2e argument optionnel pour transmettre un module (ex : 'M106')
+     aux écrans exam/résumé. Pour l'instant les écrans n'utilisent que M106 mais
+     on garde l'API ouverte. */
+  const navTo = (id /* , mod */) => { if (id !== tab) Sound.tabSwitch(); setTab(id); };
+
   const props = { dark, pal };
   const screens = {
-    today:    <TodayScreen    {...props} onNav={setTab} streak={stats.streak} nextTest={stats.nextTest} weekSuccess={stats.weekSuccess} onRecord={recordAnswer} focus={isFullscreen} onToggleFocus={toggleFullscreen} />,
-    fiches:   <FichesScreen   {...props} onNav={setTab} />,
-    reviser:  <ReviserScreen  {...props} onNav={setTab} onRecord={recordAnswer} focusMode={isFullscreen} onToggleFocus={toggleFullscreen} />,
+    today:    <TodayScreen    {...props} onNav={navTo} streak={stats.streak} nextTest={stats.nextTest} weekSuccess={stats.weekSuccess} onRecord={recordAnswer} focus={isFullscreen} onToggleFocus={toggleFullscreen} />,
+    fiches:   <FichesScreen   {...props} onNav={navTo} />,
+    reviser:  <ReviserScreen  {...props} onNav={navTo} onRecord={recordAnswer} focusMode={isFullscreen} onToggleFocus={toggleFullscreen} />,
     planning: <PlanningScreen {...props} tests={db.tests} onAddTest={addTest} onRemoveTest={removeTest} />,
     moi:      <MoiScreen      {...props} palIdx={prefs.palIdx} setPalIdx={setPalIdx} onDarkToggle={onDarkToggle}
                               fontIdx={prefs.fontIdx} setFontIdx={setFontIdx}
@@ -127,6 +141,8 @@ const App = () => {
                               sounds={prefs.sounds} setSounds={setSounds}
                               stats={stats} userName={db.userName} userSub={db.userSub}
                               onUserName={setUserName} onUserSub={setUserSub} />,
+    exam:     <ExamScreen     {...props} onNav={navTo} onRecordExam={recordExam} examStats={db.examStats} />,
+    resume:   <ResumeScreen   {...props} onNav={navTo} examStats={db.examStats} />,
   };
 
   /* La var --zoom permet aux écrans qui se calent sur la viewport (Today)

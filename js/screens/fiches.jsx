@@ -1,10 +1,15 @@
 /* Écran "Fiches" — grille de modules avec recherche.
    Clic sur une fiche → modale qui propose 3 modes : Flashcards, Préparation Exam, Résumé. */
 
-const STUDY_MODES = [
-  { id:'flash',   label:'Flashcards',         desc:"Cartes recto-verso pour mémoriser",                      icon:'reviser', ready:true },
-  { id:'exam',    label:"Préparation Exam",   desc:"QCM chronométré façon partiel",                          icon:'planning', ready:false },
-  { id:'summary', label:'Résumé',             desc:"Synthèse rapide des points clés du module",              icon:'fiches',   ready:false },
+/* M106 utilise un parcours dédié (Préparation Exam + Résumé) au lieu des flashcards.
+   FLASH_DISABLED liste les modules où on masque Flashcards.
+   EXAM_AVAILABLE liste ceux où Préparation Exam et Résumé sont activés. */
+const FLASH_DISABLED  = new Set(['M106']);
+const EXAM_AVAILABLE  = new Set(['M106']);
+const buildModes = (modId) => [
+  { id:'flash',   label:'Flashcards',         desc:"Cartes recto-verso pour mémoriser",                  icon:'reviser',  ready: !FLASH_DISABLED.has(modId) },
+  { id:'exam',    label:"Préparation Exam",   desc:"Quiz par thème : cours, QCM, exercices",             icon:'planning', ready: EXAM_AVAILABLE.has(modId) },
+  { id:'summary', label:'Résumé',             desc:"Synthèse + tes points faibles par thème",            icon:'fiches',   ready: EXAM_AVAILABLE.has(modId) },
 ];
 
 const FichesScreen = ({ dark, pal, onNav }) => {
@@ -29,8 +34,11 @@ const FichesScreen = ({ dark, pal, onNav }) => {
   const pickMode = (m) => {
     if (!m.ready) { Sound.answerHard(); return; }
     Sound.click();
+    const mod = chosen;
     setChosen(null);
-    if (m.id === 'flash') onNav('reviser');
+    if (m.id === 'flash')        onNav('reviser', mod.id);
+    else if (m.id === 'exam')    onNav('exam',    mod.id);
+    else if (m.id === 'summary') onNav('resume',  mod.id);
   };
 
   return (
@@ -121,7 +129,7 @@ const FichesScreen = ({ dark, pal, onNav }) => {
             </p>
 
             <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
-              {STUDY_MODES.map(m => (
+              {buildModes(chosen.id).map(m => (
                 <button
                   key={m.id}
                   onClick={() => pickMode(m)}

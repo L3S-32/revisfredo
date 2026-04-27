@@ -39,7 +39,7 @@ const savePrefs = (prefs) => {
 /* ---------- Données utilisateur (historique, tests, identité) ---------- */
 const DB_KEY = 'revisfredo-data';
 
-const defaultDB = () => ({ history:[], tests:[], userName:'Alfredo', userSub:'BTS SIO' });
+const defaultDB = () => ({ history:[], tests:[], userName:'Alfredo', userSub:'BTS SIO', examStats:{} });
 
 const loadDB = () => {
   try {
@@ -51,6 +51,7 @@ const loadDB = () => {
       tests:    Array.isArray(p.tests)   ? p.tests   : [],
       userName: typeof p.userName === 'string' ? p.userName : 'Alfredo',
       userSub:  typeof p.userSub  === 'string' ? p.userSub  : 'BTS SIO',
+      examStats: p.examStats && typeof p.examStats === 'object' ? p.examStats : {},
     };
   } catch { return defaultDB(); }
 };

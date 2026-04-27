@@ -2,7 +2,7 @@
 
 const MODULES = [
   { id:'M319', label:'C++',                  ck:'dk', topics:['Pointeurs','Classes','Templates','STL','Héritage'],        cards:64 },
-  { id:'M106', label:'Maintenance BDD',      ck:'pr', topics:['SQL avancé','Triggers','Vues','Transactions','Indexation'], cards:48 },
+  { id:'M106', label:'Maintenance BDD — Oracle', ck:'pr', topics:['Oracle/Docker','MCD→MLD→MPD','DDL & contraintes','DCL & rôles'], cards:0 },
   { id:'M231', label:'Protection données',   ck:'sf', topics:['RGPD','Chiffrement','DPO','Anonymisation'],                cards:32 },
   { id:'M162', label:'Modélisation',         ck:'sc', topics:['UML','MCD','MLD','Merise','E/R'],                          cards:56 },
   { id:'SI',   label:'Sciences appliquées',  ck:'sf', topics:['Électricité','Mécanique','Thermodynamique'],               cards:28 },
