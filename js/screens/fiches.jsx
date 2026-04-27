@@ -1,12 +1,37 @@
-/* Écran "Fiches" — grille de modules avec recherche, clic ouvre la révision */
+/* Écran "Fiches" — grille de modules avec recherche.
+   Clic sur une fiche → modale qui propose 3 modes : Flashcards, Préparation Exam, Résumé. */
+
+const STUDY_MODES = [
+  { id:'flash',   label:'Flashcards',         desc:"Cartes recto-verso pour mémoriser",                      icon:'reviser', ready:true },
+  { id:'exam',    label:"Préparation Exam",   desc:"QCM chronométré façon partiel",                          icon:'planning', ready:false },
+  { id:'summary', label:'Résumé',             desc:"Synthèse rapide des points clés du module",              icon:'fiches',   ready:false },
+];
 
 const FichesScreen = ({ dark, pal, onNav }) => {
   const [q, setQ] = useState('');
+  const [chosen, setChosen] = useState(null); // module sélectionné — null = pas de modale
   const c = mkC(pal, dark);
   const mods = MODULES.filter(m =>
     m.label.toLowerCase().includes(q.toLowerCase()) ||
     m.id.toLowerCase().includes(q.toLowerCase())
   );
+
+  const closeModal = () => { Sound.modalClose(); setChosen(null); };
+
+  /* Esc ferme la modale */
+  useEffect(() => {
+    if (!chosen) return;
+    const onKey = (e) => { if (e.key === 'Escape') closeModal(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [chosen]);
+
+  const pickMode = (m) => {
+    if (!m.ready) { Sound.answerHard(); return; }
+    Sound.click();
+    setChosen(null);
+    if (m.id === 'flash') onNav('reviser');
+  };
 
   return (
     <div className="scr slide-up" style={{ background:c.bg, minHeight:'calc(100vh - 65px)', padding:'28px', position:'relative', overflow:'hidden' }}>
@@ -22,7 +47,7 @@ const FichesScreen = ({ dark, pal, onNav }) => {
             const mc = modCol(mod.ck, c);
             const overlay = (mod.ck==='dk' || mod.ck==='sc') ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.07)';
             return (
-              <Card key={mod.id} bg={mc.bg} style={{ padding:24, minHeight:196 }} onClick={() => onNav('reviser')}>
+              <Card key={mod.id} bg={mc.bg} style={{ padding:24, minHeight:196 }} onClick={() => { Sound.modalOpen(); setChosen(mod); }}>
                 <Blob color={overlay} style={{ width:170, height:170, bottom:-40, right:-30 }} />
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:12, position:'relative', zIndex:1 }}>
                   <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.1em', color:mc.txt, background:overlay, padding:'4px 9px', borderRadius:7 }}>{mod.id}</span>
@@ -44,6 +69,95 @@ const FichesScreen = ({ dark, pal, onNav }) => {
           })}
         </div>
       </div>
+
+      {/* Modale "comment veux-tu réviser ?" */}
+      {chosen && (
+        <div
+          onClick={closeModal}
+          style={{
+            position:'fixed', inset:0, zIndex:300,
+            background:'rgba(0,0,0,0.32)',
+            backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)',
+            display:'flex', alignItems:'center', justifyContent:'center',
+            padding:24, animation:'fadeIn 0.18s ease',
+          }}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            className="slide-up"
+            style={{
+              background:c.bg, color:c.text,
+              borderRadius:24, padding:'30px 30px 26px',
+              width:'min(560px, 94vw)',
+              maxHeight:'88vh', overflowY:'auto',
+              boxShadow:'0 16px 48px rgba(0,0,0,0.28)',
+              border:`1.5px solid ${c.border}`,
+              position:'relative',
+            }}
+          >
+            <button
+              onClick={closeModal}
+              title="Fermer" aria-label="Fermer"
+              style={{
+                position:'absolute', top:14, right:14,
+                width:34, height:34, borderRadius:10,
+                background:'transparent', border:`1.5px solid ${c.border}`,
+                color:c.icon, cursor:'pointer',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontFamily:'var(--app-font)',
+              }}
+            >
+              <Ic n="close" s={14} c={c.icon} />
+            </button>
+
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:6 }}>
+              <span style={{ fontSize:11, fontWeight:700, letterSpacing:'0.12em', textTransform:'uppercase', color:pal.primary, background:`${pal.primary}1f`, padding:'4px 10px', borderRadius:8 }}>{chosen.id}</span>
+              <h2 style={{ fontSize:20, fontWeight:800, color:c.text, margin:0, lineHeight:1.25 }}>{chosen.label}</h2>
+            </div>
+            <p style={{ fontSize:13, color:c.icon, opacity:0.8, lineHeight:1.5, margin:'8px 0 20px' }}>
+              Comment veux-tu travailler ce module ?
+            </p>
+
+            <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+              {STUDY_MODES.map(m => (
+                <button
+                  key={m.id}
+                  onClick={() => pickMode(m)}
+                  disabled={!m.ready}
+                  style={{
+                    display:'flex', alignItems:'center', gap:14,
+                    padding:'14px 16px', borderRadius:14,
+                    background: m.ready ? c.surf : `${c.surf}88`,
+                    border:`1.5px solid ${m.ready ? c.border : c.border}`,
+                    color:c.text, cursor: m.ready ? 'pointer' : 'not-allowed',
+                    textAlign:'left', fontFamily:'var(--app-font)',
+                    opacity: m.ready ? 1 : 0.55,
+                    transition:'transform 0.15s ease, background 0.15s ease',
+                  }}
+                  onMouseEnter={e => { if (m.ready) e.currentTarget.style.background = `${pal.primary}14`; }}
+                  onMouseLeave={e => { if (m.ready) e.currentTarget.style.background = c.surf; }}
+                >
+                  <div style={{ width:42, height:42, borderRadius:12, background:pal.primary, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                    <Ic n={m.icon} s={20} c={c.text} />
+                  </div>
+                  <div style={{ flex:1, minWidth:0 }}>
+                    <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:2 }}>
+                      <span style={{ fontSize:15, fontWeight:700, color:c.text }}>{m.label}</span>
+                      {!m.ready && (
+                        <span style={{ fontSize:10, fontWeight:700, letterSpacing:'0.08em', textTransform:'uppercase', color:c.icon, background:c.cardDk, opacity:0.85, padding:'2px 8px', borderRadius:6 }}>
+                          Bientôt
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize:12, color:c.icon, opacity:0.75, lineHeight:1.4 }}>{m.desc}</div>
+                  </div>
+                  {m.ready && <Ic n="chevR" s={16} c={c.icon} />}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
