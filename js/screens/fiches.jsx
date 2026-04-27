@@ -76,8 +76,10 @@ const FichesScreen = ({ dark, pal, onNav }) => {
           onClick={closeModal}
           style={{
             position:'fixed', inset:0, zIndex:300,
-            background:'rgba(0,0,0,0.32)',
-            backdropFilter:'blur(6px)', WebkitBackdropFilter:'blur(6px)',
+            background: dark
+              ? `radial-gradient(circle at 50% 40%, ${pal.dkSecond}f0 0%, ${pal.dkBg}fa 70%)`
+              : `radial-gradient(circle at 50% 40%, ${pal.primary}e8 0%, ${pal.second}f5 70%)`,
+            backdropFilter:'blur(8px)', WebkitBackdropFilter:'blur(8px)',
             display:'flex', alignItems:'center', justifyContent:'center',
             padding:24, animation:'fadeIn 0.18s ease',
           }}
