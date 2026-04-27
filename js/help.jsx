@@ -28,6 +28,7 @@ const HelpOverlay = ({ open, setOpen, pal, dark }) => {
         onClick={() => { Sound.modalOpen(); setOpen(true); }}
         title="Aide & raccourcis (?)"
         aria-label="Aide"
+        className="help-bubble"
         style={{
           position:'fixed', bottom:24, right:24, zIndex:200,
           width:52, height:52, borderRadius:'50%',

@@ -46,7 +46,7 @@ const TodayScreen = ({ dark, pal, onNav, streak, nextTest, weekSuccess, onRecord
             </div>
           </div>
 
-          <div className="flip-container" style={{ flex:1, minHeight:0, position:'relative', zIndex:1 }} onClick={() => { Sound.flip(); setFlipped(f=>!f); }}>
+          <div className="flip-container today-flip" style={{ flex:1, minHeight:0, position:'relative', zIndex:1 }} onClick={() => { Sound.flip(); setFlipped(f=>!f); }}>
             <div className={`flip-face${flipped?' hidden':''}`} style={{ background:`${pal.primary}18`, borderRadius:16, padding:28, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
               <p style={{ fontSize:21, fontWeight:600, color:c.cardDkTxt, textAlign:'center', lineHeight:1.5, textWrap:'pretty' }}>{card.q}</p>
               <div style={{ marginTop:14, fontSize:11, color:c.cardDkTxt, opacity:0.35 }}>Cliquer pour retourner</div>
