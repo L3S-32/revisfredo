@@ -386,15 +386,24 @@ const ResumeScreen = ({ dark, pal, onNav, examStats }) => {
               <span>🎬</span> Vidéo
             </div>
             {active.video ? (
-              <div style={{ position:'relative', paddingBottom:'56.25%', height:0, borderRadius:14, overflow:'hidden', background:'black' }}>
-                <iframe
+              /\.(mp4|webm|ogg|mov)(\?|$)/i.test(active.video) ? (
+                <video
                   src={active.video}
-                  title={`Vidéo — ${active.title}`}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                  allowFullScreen
-                  style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
+                  controls
+                  preload="metadata"
+                  style={{ width:'100%', borderRadius:14, background:'black', display:'block' }}
                 />
-              </div>
+              ) : (
+                <div style={{ position:'relative', paddingBottom:'56.25%', height:0, borderRadius:14, overflow:'hidden', background:'black' }}>
+                  <iframe
+                    src={active.video}
+                    title={`Vidéo — ${active.title}`}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
+                  />
+                </div>
+              )
             ) : (
               <div style={{
                 position:'relative',

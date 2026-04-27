@@ -18,6 +18,7 @@ const M106_CONTENT = {
       emoji: '🐳',
       title: 'Environnement Oracle',
       subtitle: 'Docker, SQL Developer, schémas',
+      video: 'videos/t1-environnement.mp4',
       summary: `## Résumé
 
 Oracle ne s'installe pas directement comme MySQL : il tourne dans un **conteneur Docker** (Oracle XE), géré via **Docker Desktop** (qui dépend de WSL sur Windows). Il faut démarrer Docker avant toute commande, et basculer MySQL→Oracle en début de journée.
@@ -73,6 +74,7 @@ En MySQL, \`CREATE DATABASE ≈ CREATE SCHEMA\`. En Oracle, une seule instance p
       emoji: '🧩',
       title: 'Cas magasin — Entités et relations',
       subtitle: 'MCD → MLD → MPD',
+      video: 'videos/t2-modelisation.mp4',
       summary: `## Résumé
 
 Concevoir une base de données suit trois étapes dans l'ordre :
@@ -222,6 +224,7 @@ Exemple pour l'exercice 1.3 : \`CHECK (titre IN ('Monsieur','Madame'))\` et \`CH
       emoji: '🔐',
       title: 'Gestion des droits — DCL et rôles',
       subtitle: 'GRANT / REVOKE',
+      video: 'videos/t4-droits.mp4',
       summary: `## Résumé
 
 Le **LCD** (Langage de Contrôle des Données, DCL) gère qui a le droit de faire quoi. Deux commandes principales :
