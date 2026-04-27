@@ -378,6 +378,45 @@ const ResumeScreen = ({ dark, pal, onNav, examStats }) => {
           <div className="resume-article-body">
             {blocks.map((b, i) => <Block key={i} block={b} palette={pal} dark={dark} c={c} />)}
           </div>
+
+          {/* Emplacement vidéo en bas d'article. Si active.video est défini (URL d'embed YouTube/Vimeo),
+              on affiche l'iframe ; sinon on affiche un placeholder cliquable. */}
+          <div style={{ marginTop:36, paddingTop:24, borderTop:`1px solid ${c.border}` }}>
+            <div style={{ fontFamily:"'Lora', Georgia, serif", fontSize:22, fontWeight:700, color:c.text, marginBottom:14, display:'flex', alignItems:'center', gap:10 }}>
+              <span>🎬</span> Vidéo
+            </div>
+            {active.video ? (
+              <div style={{ position:'relative', paddingBottom:'56.25%', height:0, borderRadius:14, overflow:'hidden', background:'black' }}>
+                <iframe
+                  src={active.video}
+                  title={`Vidéo — ${active.title}`}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  style={{ position:'absolute', top:0, left:0, width:'100%', height:'100%', border:'none' }}
+                />
+              </div>
+            ) : (
+              <div style={{
+                position:'relative',
+                paddingBottom:'56.25%',
+                height:0,
+                borderRadius:14,
+                overflow:'hidden',
+                background: dark ? `${pal.dkPrimary}14` : `${pal.primary}14`,
+                border:`2px dashed ${dark ? pal.dkPrimary : pal.primary}55`,
+              }}>
+                <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:10, padding:20, textAlign:'center' }}>
+                  <div style={{ width:60, height:60, borderRadius:'50%', background: dark ? pal.dkPrimary : pal.primary, display:'flex', alignItems:'center', justifyContent:'center', fontSize:24 }}>
+                    ▶
+                  </div>
+                  <div style={{ fontSize:14, fontWeight:600, color:c.text }}>Vidéo à venir</div>
+                  <div style={{ fontSize:12, color:c.icon, opacity:0.7, maxWidth:380 }}>
+                    L'enregistrement vidéo de ce thème sera bientôt disponible ici.
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </article>
       </div>
     </div>
